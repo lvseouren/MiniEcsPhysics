@@ -9,7 +9,7 @@ namespace Physics
 	[EcsUpdateAfter(typeof(BroadphaseCalculatePairSystem))]
 	public class ResolveCollisionsSystem : IEcsSystem
 	{
-		public void Update(float deltaTime, EcsWorld world)
+		public void Update(XFix64 deltaTime, EcsWorld world)
 		{
 			BroadphaseSAPComponent bpChunks =
 				world.GetOrCreateSingleton<BroadphaseSAPComponent>();
@@ -51,10 +51,10 @@ namespace Physics
 
 				float2 rv = rb.Velocity - ra.Velocity;
 
-				float contactVel = math.dot(rv, info.Normal);
-				float invMassSum = ra.InvMass + rb.InvMass;
+				XFix64 contactVel = math.dot(rv, info.Normal);
+				XFix64 invMassSum = ra.InvMass + rb.InvMass;
 
-				float f = -contactVel / invMassSum;
+				XFix64 f = -contactVel / invMassSum;
 				float2 impulse = info.Normal * f * deltaTime;
 
 				ra.Velocity -= ra.InvMass * impulse;
@@ -68,7 +68,7 @@ namespace Physics
 
 		private struct ContactInfo
 		{
-			public float Penetration;
+			public XFix64 Penetration;
 			public float2 Normal;
 			public float2 HitPoint;
 			public bool Hit;
@@ -82,12 +82,12 @@ namespace Physics
 			float2x2 rotate = float2x2.Rotate(tb.Rotation);
 			float2 center = MathHelper.Mul(MathHelper.Transpose(rotate), ta.Position - tb.Position);
 
-			float radius = ca.Size.x;
-			float separation = float.MinValue;
+			XFix64 radius = ca.Size.x;
+			XFix64 separation = XFix64.MinValue;
 			int faceNormal = 0;
 			for (int i = 0; i < 4; ++i)
 			{
-				float s = math.dot(cb.Normals[i], center - cb.Vertices[i]);
+				XFix64 s = math.dot(cb.Normals[i], center - cb.Vertices[i]);
 				if (s > radius)
 					return;
 
@@ -147,12 +147,12 @@ namespace Physics
 			TransformComponent tb, out ContactInfo contactInfo)
 		{
 			contactInfo = new ContactInfo();
-			float caRadius = ca.Size.x;
-			float cbRadius = cb.Size.x;
+			XFix64 caRadius = ca.Size.x;
+			XFix64 cbRadius = cb.Size.x;
 			
 			float2 normal = tb.Position - ta.Position;
-			float distSqr = math.lengthsq(normal);
-			float radius = caRadius + cbRadius;
+			XFix64 distSqr = math.lengthsq(normal);
+			XFix64 radius = caRadius + cbRadius;
 
 			if (distSqr >= radius * radius)
 			{
@@ -160,7 +160,7 @@ namespace Physics
 				return;
 			}
 
-			float distance = math.sqrt(distSqr);
+			XFix64 distance = math.sqrt(distSqr);
 			contactInfo.Hit = true;
 
 			if (MathHelper.Equal(distance, 0.0f))

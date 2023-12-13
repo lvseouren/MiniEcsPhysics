@@ -107,7 +107,7 @@ namespace BinarySerializer
                         serializers.Add(new DoubleBinarySerializer(index, ownerType, field, DoubleWriter));
                     else if (fieldType == typeof(char))
                         serializers.Add(new CharBinarySerializer(index, ownerType, field, CharWriter));
-                    else if (fieldType == typeof(float))
+                    else if (fieldType == typeof(XFix64))
                         serializers.Add(attr.IsShort
                             ? (IBinarySerializer) new ShortFloatBinarySerializer(index, ownerType, field,
                                 ShortFloatWriter)
@@ -153,7 +153,7 @@ namespace BinarySerializer
                         serializers.Add(new CharPropertyBinarySerializer(index, ownerType, field, CharWriter));
                     else if (fieldType == typeof(Property<string>))
                         serializers.Add(new StringPropertyBinarySerializer(index, ownerType, field, StringWriter));
-                    else if (fieldType == typeof(Property<float>))
+                    else if (fieldType == typeof(Property<XFix64>))
                         serializers.Add(attr.IsShort
                             ? (IBinarySerializer) new ShortFloatPropertyBinarySerializer(index, ownerType, field,
                                 ShortFloatWriter)

@@ -16,7 +16,7 @@ namespace Physics
             _entitiesFilter = new EcsFilter().AllOf<TransformComponent, ColliderComponent, RigBodyComponent>().NoneOf<BroadphaseRefComponent>();
         }
         
-        public unsafe void Update(float deltaTime, EcsWorld world)
+        public unsafe void Update(XFix64 deltaTime, EcsWorld world)
         {
             BroadphaseSAPComponent bpChunks = world.GetOrCreateSingleton<BroadphaseSAPComponent>();
 

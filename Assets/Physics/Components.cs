@@ -1,21 +1,22 @@
 using System.Collections.Generic;
 using MiniEcs.Core;
 using Unity.Mathematics;
+using XFixMath.NET;
 
 namespace Physics
 {
     public class TransformComponent : IEcsComponent
     {
         public float2 Position = float2.zero;
-        public float Rotation = 0;
+        public XFix64 Rotation = 0;
     }
 
     public class RigBodyComponent : IEcsComponent
     {
         public float2 Velocity = float2.zero;
-        private float _mass = 1.0f;
+        private XFix64 _mass = 1.0f;
 
-        public float Mass
+        public XFix64 Mass
         {
             get => _mass;
             set
@@ -25,7 +26,7 @@ namespace Physics
             }
         }
 
-        public float InvMass { get; private set; } = 0.1f;
+        public XFix64 InvMass { get; private set; } = 0.1f;
     }
 
     public enum ColliderType : byte
@@ -48,8 +49,8 @@ namespace Physics
             set
             {
                 _size = value;
-                float w = _size.x;
-                float h = _size.y;
+                XFix64 w = _size.x;
+                XFix64 h = _size.y;
                 Vertices = new float2x4(-w, w, w, -w, -h, -h, h, h);
                 Normals = new float2x4(0.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f);
             }
@@ -77,8 +78,8 @@ namespace Physics
     {
         public int Layer;
         public float2 Source;
-        public float Rotation;
-        public float Length;
+        public XFix64 Rotation;
+        public XFix64 Length;
 
         public float2 Target
         {

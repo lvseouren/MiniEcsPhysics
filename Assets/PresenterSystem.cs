@@ -3,6 +3,7 @@ using MiniEcs.Core.Systems;
 using Physics;
 using Unity.Mathematics;
 using UnityEngine;
+using XFixMath.NET;
 
 [EcsUpdateAfter(typeof(PhysicsSystemGroup))]
 public class PresenterSystem : IEcsSystem
@@ -18,7 +19,7 @@ public class PresenterSystem : IEcsSystem
         _rayFilter = new EcsFilter().AllOf<CharacterComponent, RayComponent>();
     }
 
-    public void Update(float deltaTime, EcsWorld world)
+    public void Update(XFix64 deltaTime, EcsWorld world)
     {
         world.Filter(_transformsFilter).ForEach((IEcsEntity entity, TransformComponent transform, CharacterComponent character) =>
         {
@@ -30,7 +31,7 @@ public class PresenterSystem : IEcsSystem
         {
             float2 target = ray.Hit ? ray.HitPoint : ray.Target;
 
-            float distance = math.distance(ray.Source, target);
+            XFix64 distance = math.distance(ray.Source, target);
             character.Ref.Ray.localScale = new Vector3(0.4f, 5, distance);
             character.Ref.Ray.localPosition = 0.5f * distance * Vector3.forward;
         });

@@ -140,7 +140,7 @@ namespace BinarySerializer.Serializers
         }
     }
 
-    public sealed class FloatPropertyBinarySerializer : PropertyBinarySerializer<float, FloatWriter>
+    public sealed class FloatPropertyBinarySerializer : PropertyBinarySerializer<XFix64, FloatWriter>
     {
         public FloatPropertyBinarySerializer(byte index, Type ownerType, FieldInfo field, FloatWriter writer) : base(
             index, ownerType, field, writer)
@@ -148,7 +148,7 @@ namespace BinarySerializer.Serializers
         }
     }
 
-    public sealed class ShortFloatPropertyBinarySerializer : PropertyBinarySerializer<float, ShortFloatWriter>
+    public sealed class ShortFloatPropertyBinarySerializer : PropertyBinarySerializer<XFix64, ShortFloatWriter>
     {
         public ShortFloatPropertyBinarySerializer(byte index, Type ownerType, FieldInfo field, ShortFloatWriter writer)
             : base(index, ownerType, field, writer)

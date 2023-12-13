@@ -14,7 +14,7 @@ public class InputSystem : IEcsSystem
         _heroFilter = new EcsFilter().AllOf<TransformComponent, RigBodyComponent, HeroComponent>();
     }
 
-    public void Update(float deltaTime, EcsWorld world)
+    public void Update(XFix64 deltaTime, EcsWorld world)
     {
         world.Filter(_heroFilter).ForEach((IEcsEntity entity, TransformComponent transform, RigBodyComponent rigBody) =>
         {
@@ -33,7 +33,7 @@ public class InputSystem : IEcsSystem
             if (!Input.GetKey(KeyCode.W))
                 return;
 
-            float rad = transform.Rotation;
+            XFix64 rad = transform.Rotation;
             float2 dir = new float2(-math.sin(rad), math.cos(rad));
             rigBody.Velocity = 25 * dir;
         });

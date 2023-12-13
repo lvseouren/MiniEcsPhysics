@@ -116,7 +116,7 @@ namespace BinarySerializer.Data
             return retval;
         }
 
-        public float ReadShortFloat()
+        public XFix64 ReadShortFloat()
         {
             if (!(InnerLen - _innerPosition >= 2))
                 throw new BufferException("Trying to read past the buffer size");
@@ -126,11 +126,11 @@ namespace BinarySerializer.Data
             return retval / 256f;
         }
 
-        public float ReadFloat()
+        public XFix64 ReadFloat()
         {
             if (!(InnerLen - _innerPosition >= 4))
                 throw new BufferException("Trying to read past the buffer size");
-            float retval = Buffer.ToSingle(_innerPosition);
+            XFix64 retval = Buffer.ToSingle(_innerPosition);
             _innerPosition += 4;
             Position += 4;
             return retval;

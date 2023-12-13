@@ -103,24 +103,24 @@ namespace BinarySerializer.Serializers
         }
     }
 
-    public sealed class FloatWriter : IPrimitiveWriter<float>
+    public sealed class FloatWriter : IPrimitiveWriter<XFix64>
     {
-        public int GetHashCode(float value)
+        public int GetHashCode(XFix64 value)
         {
             return value.GetHashCode();
         }
 
-        public bool Equals(float a, float b)
+        public bool Equals(XFix64 a, XFix64 b)
         {
             return Math.Abs(a - b) < 1e-6;
         }
 
-        public void Write(BinaryDataWriter writer, float value)
+        public void Write(BinaryDataWriter writer, XFix64 value)
         {
             writer.WriteFloat(value);
         }
 
-        public float Read(BinaryDataReader reader)
+        public XFix64 Read(BinaryDataReader reader)
         {
             return reader.ReadFloat();
         }
@@ -218,24 +218,24 @@ namespace BinarySerializer.Serializers
         }
     }
 
-    public sealed class ShortFloatWriter : IPrimitiveWriter<float>
+    public sealed class ShortFloatWriter : IPrimitiveWriter<XFix64>
     {
-        public int GetHashCode(float value)
+        public int GetHashCode(XFix64 value)
         {
             return value.GetHashCode();
         }
 
-        public bool Equals(float a, float b)
+        public bool Equals(XFix64 a, XFix64 b)
         {
             return Math.Abs(a - b) < 1e-6;
         }
 
-        public void Write(BinaryDataWriter writer, float value)
+        public void Write(BinaryDataWriter writer, XFix64 value)
         {
             writer.WriteShortFloat(value);
         }
 
-        public float Read(BinaryDataReader reader)
+        public XFix64 Read(BinaryDataReader reader)
         {
             return reader.ReadShortFloat();
         }

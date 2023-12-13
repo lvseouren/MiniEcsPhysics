@@ -18,7 +18,7 @@ namespace Physics
                 .NoneOf<RigBodyStaticComponent>();
         }
 
-        public unsafe void Update(float deltaTime, EcsWorld world)
+        public unsafe void Update(XFix64 deltaTime, EcsWorld world)
         {
             BroadphaseSAPComponent bpChunks = world.GetOrCreateSingleton<BroadphaseSAPComponent>();
 

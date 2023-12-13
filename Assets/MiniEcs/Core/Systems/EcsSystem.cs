@@ -1,4 +1,5 @@
 using System;
+using XFixMath.NET;
 
 namespace MiniEcs.Core.Systems
 {
@@ -54,6 +55,6 @@ namespace MiniEcs.Core.Systems
     /// </summary>
     public interface IEcsSystem
     {
-        void Update(float deltaTime, EcsWorld world);
+        void Update(XFix64 deltaTime, EcsWorld world);
     }
 }

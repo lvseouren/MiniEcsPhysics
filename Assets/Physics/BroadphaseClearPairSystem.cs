@@ -7,7 +7,7 @@ namespace Physics
     [EcsUpdateAfter(typeof(RaytracingSystem))]
     public class BroadphaseClearPairSystem : IEcsSystem
     {
-        public void Update(float deltaTime, EcsWorld world)
+        public void Update(XFix64 deltaTime, EcsWorld world)
         {
             BroadphaseSAPComponent bpChunks = world.GetOrCreateSingleton<BroadphaseSAPComponent>();
             

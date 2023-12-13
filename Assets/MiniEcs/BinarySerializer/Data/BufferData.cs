@@ -55,7 +55,7 @@ namespace BinarySerializer.Data
             return BitConverter.ToDouble(_data, position);
         }
         
-        public float ToSingle(int position)
+        public XFix64 ToSingle(int position)
         {
             return BitConverter.ToSingle(_data, position);
         }

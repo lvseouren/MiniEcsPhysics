@@ -20,7 +20,7 @@ namespace Physics
         private int[] _chunksBuffer = new int[100];
         private float2[] _pointsBuffer = new float2[100];
 
-        public unsafe void Update(float deltaTime, EcsWorld world)
+        public unsafe void Update(XFix64 deltaTime, EcsWorld world)
         {
             BroadphaseSAPComponent bpChunks = world.GetOrCreateSingleton<BroadphaseSAPComponent>();
 
@@ -30,7 +30,7 @@ namespace Physics
                 ray.Source = tr.Position;
                 ray.Rotation = tr.Rotation;
 
-                float minDist = float.MaxValue;
+                XFix64 minDist = XFix64.MaxValue;
                 RayTrace(ray, ref _chunksBuffer, ref _pointsBuffer, out int length);
 
                 for (int i = 0; i < length - 1; i++)
@@ -66,7 +66,7 @@ namespace Physics
                             col.ColliderType == ColliderType.Rect && !OnRectIntersection(ray, col, tr, out hitPoint))
                             continue;
 
-                        float dist = math.distancesq(p1, hitPoint);
+                        XFix64 dist = math.distancesq(p1, hitPoint);
                         if (!(dist < minDist))
                             continue;
 
@@ -74,7 +74,7 @@ namespace Physics
                         ray.HitPoint = hitPoint;
                     }
 
-                    if (!(minDist < float.MaxValue))
+                    if (!(minDist < XFix64.MaxValue))
                         continue;
 
                     ray.Hit = true;
@@ -85,29 +85,29 @@ namespace Physics
 
         private static void RayTrace(RayComponent ray, ref int[] chunks, ref float2[] points, out int length)
         {
-            const float cellSize = BroadphaseHelper.ChunkSize;
-            const float offset = ushort.MaxValue * cellSize;
+            const XFix64 cellSize = BroadphaseHelper.ChunkSize;
+            const XFix64 offset = ushort.MaxValue * cellSize;
 
             float2 source = ray.Source + offset;
             float2 target = ray.Target + offset;
 
-            float x0 = source.x / cellSize;
-            float y0 = source.y / cellSize;
-            float x1 = target.x / cellSize;
-            float y1 = target.y / cellSize;
-            float dx = math.abs(x1 - x0);
-            float dy = math.abs(y1 - y0);
+            XFix64 x0 = source.x / cellSize;
+            XFix64 y0 = source.y / cellSize;
+            XFix64 x1 = target.x / cellSize;
+            XFix64 y1 = target.y / cellSize;
+            XFix64 dx = math.abs(x1 - x0);
+            XFix64 dy = math.abs(y1 - y0);
 
             int x = (int) math.abs(x0);
             int y = (int) math.abs(y0);
 
-            float dtDx = 1.0f / dx;
-            float dtDy = 1.0f / dy;
-            float t = 0.0f;
+            XFix64 dtDx = 1.0f / dx;
+            XFix64 dtDy = 1.0f / dy;
+            XFix64 t = 0.0f;
 
             int n = 1;
             int xInc, yInc;
-            float tnv, tnh;
+            XFix64 tnv, tnh;
 
             if (math.abs(dx) < MathHelper.EPSILON)
             {
@@ -148,8 +148,8 @@ namespace Physics
             length = n + 1;
             for (int i = 0; n > 0; n--, i++)
             {
-                float xPos = t * (x1 - x0) * cellSize;
-                float yPos = t * (y1 - y0) * cellSize;
+                XFix64 xPos = t * (x1 - x0) * cellSize;
+                XFix64 yPos = t * (y1 - y0) * cellSize;
                 float2 pos = new float2(xPos, yPos);
                 points[i] = source + pos - offset;
 
@@ -181,19 +181,19 @@ namespace Physics
             float2 source = ray.Source;
             float2 target = ray.Target;
             float2 pos = tr.Position;
-            float r = col.Size.x;
+            XFix64 r = col.Size.x;
 
-            float t;
-            float dx = target.x - source.x;
-            float dy = target.y - source.y;
+            XFix64 t;
+            XFix64 dx = target.x - source.x;
+            XFix64 dy = target.y - source.y;
 
-            float a = dx * dx + dy * dy;
-            float spDx = source.x - pos.x;
-            float spDy = source.y - pos.y;
-            float b = 2 * (dx * spDx + dy * spDy);
-            float c = spDx * spDx + spDy * spDy - r * r;
+            XFix64 a = dx * dx + dy * dy;
+            XFix64 spDx = source.x - pos.x;
+            XFix64 spDy = source.y - pos.y;
+            XFix64 b = 2 * (dx * spDx + dy * spDy);
+            XFix64 c = spDx * spDx + spDy * spDy - r * r;
 
-            float det = b * b - 4 * a * c;
+            XFix64 det = b * b - 4 * a * c;
             if (a <= MathHelper.EPSILON || det < 0)
                 return false;
 
@@ -204,7 +204,7 @@ namespace Physics
                 return true;
             }
 
-            float sqrtDet = math.sqrt(det);
+            XFix64 sqrtDet = math.sqrt(det);
 
             t = (-b + sqrtDet) / (2 * a);
             float2 p1 = new float2(source.x + t * dx, source.y + t * dy);
@@ -220,7 +220,7 @@ namespace Physics
             out float2 hitPoint)
         {
             hitPoint = float2.zero;
-            float minDist = float.MaxValue;
+            XFix64 minDist = XFix64.MaxValue;
 
             float2x2 rotate = float2x2.Rotate(tr.Rotation);
             float2x4 vertices = float2x4.zero;
@@ -239,22 +239,22 @@ namespace Physics
                 float2 b = ray.Target - ray.Source;
                 float2 d = p2 - p1;
 
-                float cross = b.x * d.y - b.y * d.x;
+                XFix64 cross = b.x * d.y - b.y * d.x;
                 if (MathHelper.Equal(cross, 0))
                     continue;
 
                 float2 c = p1 - ray.Source;
-                float t = (c.x * d.y - c.y * d.x) / cross;
+                XFix64 t = (c.x * d.y - c.y * d.x) / cross;
                 if (t < 0 || t > 1)
                     continue;
 
-                float u = (c.x * b.y - c.y * b.x) / cross;
+                XFix64 u = (c.x * b.y - c.y * b.x) / cross;
                 if (u < 0 || u > 1)
                     continue;
 
                 float2 p = ray.Source + t * b;
 
-                float dist = math.distancesq(ray.Source, p);
+                XFix64 dist = math.distancesq(ray.Source, p);
                 if (!(dist < minDist))
                     continue;
 
@@ -262,7 +262,7 @@ namespace Physics
                 hitPoint = p;
             }
 
-            return minDist < float.MaxValue;
+            return minDist < XFix64.MaxValue;
         }
     }
 }

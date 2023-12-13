@@ -1,14 +1,15 @@
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
+using XFixMath.NET;
 
 namespace Physics
 {
     public class MathHelper
     {
-        public const float EPSILON = 1.1920928955078125e-7f;
+        public static readonly XFix64 EPSILON = 1.1920928955078125e-7f;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Equal(float a, float b)
+        public static bool Equal(XFix64 a, XFix64 b)
         {
             return math.abs(a - b) <= EPSILON;
         }

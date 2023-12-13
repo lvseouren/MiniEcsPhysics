@@ -21,7 +21,7 @@ namespace BinarySerializer.Data
             public int Aint;
 
             [FieldOffset(0)]
-            public float Afloat;
+            public XFix64 Afloat;
         }
         
         public static void Write(byte[] buffer, int offset, ulong data)
@@ -56,7 +56,7 @@ namespace BinarySerializer.Data
             Write(bytes, startIndex, ch.Along);
         }
 
-        public static void Write(byte[] bytes, int startIndex, float value)
+        public static void Write(byte[] bytes, int startIndex, XFix64 value)
         {
             ConverterHelperFloat ch = new ConverterHelperFloat { Afloat = value };
             Write(bytes, startIndex, ch.Aint);

@@ -15,7 +15,7 @@ namespace Physics
             _filter = new EcsFilter().AllOf<TransformComponent, RigBodyComponent>().NoneOf<RigBodyStaticComponent>();
         }
 
-        public void Update(float deltaTime, EcsWorld world)
+        public void Update(XFix64 deltaTime, EcsWorld world)
         {
             world.Filter(_filter).ForEach((IEcsEntity entity, TransformComponent transform, RigBodyComponent rigBody) =>
             {

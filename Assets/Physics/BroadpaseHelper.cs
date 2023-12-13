@@ -65,7 +65,7 @@ namespace Physics
     
     public static class BroadphaseHelper
     {
-        public const float ChunkSize = 50;
+        public const XFix64 ChunkSize = 50;
 
         public static SAPChunk GetOrCreateChunk(int chunkId, BroadphaseSAPComponent bpChunks)
         {

@@ -19,7 +19,7 @@ namespace Physics
             _collisionMatrix = collisionMatrix;
         }
 
-        public void Update(float deltaTime, EcsWorld world)
+        public void Update(XFix64 deltaTime, EcsWorld world)
         {
             BroadphaseSAPComponent bpChunks = world.GetOrCreateSingleton<BroadphaseSAPComponent>();
 
@@ -92,8 +92,8 @@ namespace Physics
 
             public int Compare(BroadphaseAABB a, BroadphaseAABB b)
             {
-                float minA = a.AABB->Min[_axis];
-                float minB = b.AABB->Min[_axis];
+                XFix64 minA = a.AABB->Min[_axis];
+                XFix64 minB = b.AABB->Min[_axis];
                 return minA < minB ? -1 : minA > minB ? 1 : 0;
             }
 

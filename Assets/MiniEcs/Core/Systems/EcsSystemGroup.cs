@@ -101,7 +101,7 @@ namespace MiniEcs.Core.Systems
         /// </summary>
         /// <param name="deltaTime">Elapsed time since last update</param>
         /// <param name="world">Entity Manager <see cref="EcsWorld"/></param>
-        public void Update(float deltaTime, EcsWorld world)
+        public void Update(XFix64 deltaTime, EcsWorld world)
         {
             if (_dirty)
             {

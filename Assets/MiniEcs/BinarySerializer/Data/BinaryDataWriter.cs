@@ -83,7 +83,7 @@ namespace BinarySerializer.Data
             IncLength(4);
         }
 
-        public void WriteFloat(float value)
+        public void WriteFloat(XFix64 value)
         {
             Buffer.EnsureBufferSize(InnerLen + 4);
             FastBitConverter.Write(Buffer.Data, InnerLen, value);
@@ -104,7 +104,7 @@ namespace BinarySerializer.Data
             IncLength(8);
         }
 
-        public void WriteShortFloat(float value)
+        public void WriteShortFloat(XFix64 value)
         {
             WriteShort((short) (value * 256));
         }
