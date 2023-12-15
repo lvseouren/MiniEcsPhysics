@@ -29,9 +29,9 @@ public class PresenterSystem : IEcsSystem
 
         world.Filter(_rayFilter).ForEach((IEcsEntity entity, RayComponent ray, CharacterComponent character) =>
         {
-            float2 target = ray.Hit ? ray.HitPoint : ray.Target;
+            XFix64Vector2 target = ray.Hit ? ray.HitPoint : ray.Target;
 
-            XFix64 distance = math.distance(ray.Source, target);
+            XFix64 distance = XFix64Vector2.Distance(ray.Source, target);
             character.Ref.Ray.localScale = new Vector3(0.4f, 5, distance);
             character.Ref.Ray.localPosition = 0.5f * distance * Vector3.forward;
         });

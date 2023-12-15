@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using XFixMath.NET;
 
 /// <summary>
 /// 内部统一描述角度、弧度
@@ -8,7 +9,7 @@ using System.Text;
 public struct XAngle
 {
     //游戏内弧度，unity弧度的100倍
-    private int m_radian;
+    private XFix64 m_radian;
 
     public bool m_bSmooth;//是否要平滑表现
         
@@ -24,86 +25,24 @@ public struct XAngle
     {
         get { return m_radian; }
     }
-    public int degree
+    public XFix64 degree
     {
-        //get { return MathX.FixToInt(Math.Round((double)(MathX.Rad2Deg * m_radian))); }
-        //get { return MathX.FixToInt(MathX.Rad2Deg * m_radian); }
-        get { return MathX.FixToInt(MathX.Rad2Deg * m_radian / XDefine.UNIT_CR_PER_RADIAN);}
-    }
-    public float unityRadian
-    {
-        get { return ToUnityRadian(); }
-    }
-    public float unityDegree
-    {
-        get { return ToUnityDegree(); }
+        get { return MathXFix64.Rad2Deg * m_radian;}
     }
 
-    public static XAngle CreateXAngleFromUnityRadian(float unityRadian)
-    {
-        int radian = MathX.FixToInt(Math.Round(unityRadian * XDefine.UNIT_CR_PER_RADIAN));
-        return new XAngle(radian);
-    }
-    public static XAngle CreateXAngleFromUnityDegree(float unityDegree)
-    {
-        int radian = MathX.FixToInt(Math.Round(unityDegree * MathX.Deg2Rad * XDefine.UNIT_CR_PER_RADIAN));
-        return new XAngle(radian);
-    }
-    public static XAngle CreateXAngleFromXRadian(int radian)
+    public static XAngle CreateXAngleFromXRadian(XFix64 radian)
     {
         return new XAngle(radian);
     }
-    public static XAngle CreateXAngleFromXDegree(int degree)
+    public static XAngle CreateXAngleFromXDegree(XFix64 degree)
     {
-        int radian = MathX.FixToInt(Math.Round(degree * MathX.Deg2Rad));
+        int radian = degree * MathXFix64.Deg2Rad;
         return new XAngle(radian);
     }
 
     public static XAngle zero
     {
         get { return new XAngle(0); }
-    }
-
-    /// <summary>
-    /// 转成unity的标准角度
-    /// </summary>
-    /// <returns></returns>
-    public float ToUnityDegree()
-    {
-		return MathX.Rad2Deg * m_radian / XDefine.UNIT_CR_PER_RADIAN;
-    }
-    /// <summary>
-    /// 转成unity的标准角度，取整数
-    /// </summary>
-    /// <returns></returns>
-    public int ToUnityDegreeInt()
-    {
-        return MathX.FixToInt(MathX.Rad2Deg * m_radian / XDefine.UNIT_CR_PER_RADIAN);
-    }
-    /// <summary>
-    /// 转成unity的弧度
-    /// </summary>
-    /// <returns></returns>
-    public float ToUnityRadian()
-    {
-        return (float)(m_radian / (float)XDefine.UNIT_CR_PER_RADIAN);
-    }
-
-    /// <summary>
-    /// 转成游戏内自定的弧度，相当于unity标准弧度数值百分一
-    /// </summary>
-    /// <returns></returns>
-    public int ToXRadian()
-    {
-        return m_radian;
-    }
-    /// <summary>
-    /// 转成游戏内自定的角度，相当于unity标准角数百分一
-    /// </summary>
-    /// <returns></returns>
-    public int ToXDegree()
-    {
-        return MathX.FixToInt(Math.Round((double)(MathX.Rad2Deg * m_radian)));
     }
 
     //
@@ -127,16 +66,12 @@ public struct XAngle
     }
     public override string ToString()
     {
-        return string.Format("XAngle({0})", ToUnityDegree());
+        return string.Format("XAngle({0})", m_radian);
     }
 
     public string ToString(string format)
     {
-        return string.Format("XAngle({0},{1})", new object[]
-            {
-                this.m_radian,
-                this.m_bSmooth
-            });
+        return string.Format("XAngle({0},{1})", m_radian, m_bSmooth);
     }
 
     //
@@ -162,7 +97,7 @@ public struct XAngle
     }
     public static XAngle operator /(XAngle a, XAngle b)
     {
-        int radian = MathX.FixToInt(Math.Round((double)(a.m_radian / b.m_radian)));
+        int radian = a.m_radian / b.m_radian;
         return new XAngle(radian);
     }
 
@@ -185,16 +120,12 @@ public struct XAngle
         return new XAngle(a.m_radian * d);
     }
 
-    public static XAngle operator *(XAngle a, float d)
+    public static XAngle operator *(XAngle a, XFix64 d)
     {
-        int radian = MathX.FixToInt(Math.Round((double)(a.m_radian * d)));
-        return new XAngle(radian);
+        return new XAngle(a.m_radian * d);
     }
-    public static XAngle operator *(float d, XAngle a)
+    public static XAngle operator *(XFix64 d, XAngle a)
     {
-        int radian = MathX.FixToInt(Math.Round((double)(a.m_radian * d)));
-        return new XAngle(radian);
+        return new XAngle(a.m_radian * d);
     }
-
-
 }

@@ -280,7 +280,7 @@ public struct XFQuaternion {
 			left[1] = left[1] * invlen;
 			left[2] = left[2] * invlen;
 
-			XFix64[] up = new XFix64[]{XFix64.Zero, XFix64.Zero, XFix64.Zero };
+			XFix64[] up = new XFix64[] { XFix64.Zero, XFix64.Zero, XFix64.Zero };
 			up[0] = left[1] * from.z - left[2] * from.y;
 			up[1] = left[2] * from.x - left[0] * from.z;
 			up[2] = left[0] * from.y - left[1] * from.x;
@@ -364,7 +364,7 @@ public struct XFQuaternion {
 	public static XFQuaternion LookRotation (Vector3 forward, Vector3 upwards)
 	{
 		XFix64 mag = forward.magnitude;
-		if (mag < kEpsilon) {
+		if (mag == XFix64.Zero) {
 			//XLog.LogError("XFQuaternion LookRotation Error...");
 			return XFQuaternion.identity;
 		}
@@ -513,10 +513,10 @@ public struct XFQuaternion {
 	public void ToAngleAxis (out XFix64 angle, out Vector3 axis)
 	{
 		angle = Mathf.Acos (w) * 2;
-		if (Mathf.Abs (angle) < kEpsilon) {
+		if (XFix64.Abs (angle).Equals(XFix64.Zero)) {
 			axis = new Vector3 (1, 0, 0);
 		} else {
-			XFix64 div = 1/Mathf.Sqrt(1-w*w);
+			XFix64 div = XFix64.One/XFix64.Sqrt(1-w*w);
 			axis = new Vector3(x*div,y*div,z*div);//??
 		}
 		//??

@@ -3,6 +3,7 @@ using MiniEcs.Core.Systems;
 using Physics;
 using Unity.Mathematics;
 using UnityEngine;
+using XFixMath.NET;
 
 [EcsUpdateBefore(typeof(PhysicsSystemGroup))]
 public class InputSystem : IEcsSystem
@@ -28,13 +29,13 @@ public class InputSystem : IEcsSystem
                 transform.Rotation -= 2 * deltaTime;
             }
 
-            rigBody.Velocity = float2.zero;
+            rigBody.Velocity = XFix64Vector2.zero;
 
             if (!Input.GetKey(KeyCode.W))
                 return;
 
             XFix64 rad = transform.Rotation;
-            float2 dir = new float2(-math.sin(rad), math.cos(rad));
+            XFix64Vector2 dir = new XFix64Vector2(-XFix64.Sin(rad), XFix64.Cos(rad));
             rigBody.Velocity = 25 * dir;
         });
     }

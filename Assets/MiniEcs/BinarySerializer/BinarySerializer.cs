@@ -6,6 +6,7 @@ using BinarySerializer.Expressions;
 using BinarySerializer.Properties;
 using BinarySerializer.Serializers;
 using BinarySerializer.Serializers.Baselines;
+using XFixMath.NET;
 
 namespace BinarySerializer
 {

@@ -1,5 +1,6 @@
 using System;
 using BinarySerializer.Data;
+using XFixMath.NET;
 
 namespace BinarySerializer.Serializers
 {

@@ -11,13 +11,13 @@ namespace Physics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Equal(XFix64 a, XFix64 b)
         {
-            return math.abs(a - b) <= EPSILON;
+            return a.Equals(b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float2 Mul(float2x2 lhs, float2 rhs)
+        public static XFix64Vector2 Mul(float2x2 lhs, XFix64Vector2 rhs)
         {
-            return new float2(lhs.c0.x * rhs.x + lhs.c1.x * rhs.y, lhs.c0.y * rhs.x + lhs.c1.y * rhs.y);
+            return new XFix64Vector2(lhs.c0.x * rhs.x + lhs.c1.x * rhs.y, lhs.c0.y * rhs.x + lhs.c1.y * rhs.y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

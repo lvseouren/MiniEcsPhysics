@@ -1,21 +1,23 @@
 using Unity.Mathematics;
+using XFixMath.NET;
 
 namespace Physics
 {
     public struct AABB
     {
-        public float2 Min;
-        public float2 Max;
+        public XFix64Vector2 Min;
+        public XFix64Vector2 Max;
         
-        public AABB(float2 size, float2 position, XFix64 rotation)
+        public AABB(XFix64Vector2 size, XFix64Vector2 position, XFix64 rotation)
         {
-            math.sincos(rotation, out XFix64 sin, out XFix64 cos);
+            var sin = XFix64.Sin(rotation);
+            var cos = XFix64.Cos(rotation);            
 
-            XFix64 ex = math.max(math.abs(size.x * cos + size.y * sin), math.abs(size.x * cos - size.y * sin));
-            XFix64 ey = math.max(math.abs(size.x * sin - size.y * cos), math.abs(size.x * sin + size.y * cos));
+            XFix64 ex = XFix64.Max(XFix64.Abs(size.x * cos + size.y * sin), XFix64.Abs(size.x * cos - size.y * sin));
+            XFix64 ey = XFix64.Max(XFix64.Abs(size.x * sin - size.y * cos), XFix64.Abs(size.x * sin + size.y * cos));
 
-            Min = new float2(position.x - ex, position.y - ey);
-            Max = new float2(position.x + ex, position.y + ey);
+            Min = new XFix64Vector2(position.x - ex, position.y - ey);
+            Max = new XFix64Vector2(position.x + ex, position.y + ey);
         }
 
         public bool Overlap(AABB aabb)

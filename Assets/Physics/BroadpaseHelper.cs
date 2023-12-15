@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using MiniEcs.Core;
 using Unity.Mathematics;
+using XFixMath.NET;
 
 namespace Physics
 {
@@ -65,7 +66,7 @@ namespace Physics
     
     public static class BroadphaseHelper
     {
-        public const XFix64 ChunkSize = 50;
+        public static readonly XFix64 ChunkSize = 50;
 
         public static SAPChunk GetOrCreateChunk(int chunkId, BroadphaseSAPComponent bpChunks)
         {

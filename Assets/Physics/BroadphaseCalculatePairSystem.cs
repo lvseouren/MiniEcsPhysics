@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MiniEcs.Core;
 using MiniEcs.Core.Systems;
 using Unity.Mathematics;
+using XFixMath.NET;
 
 namespace Physics
 {
@@ -44,17 +45,19 @@ namespace Physics
             chunk.PairLength = 0;
 
             int length = chunk.Length;
+            if (length == 0)
+                return;
 
             _comparer.UpdateSortAxis(chunk.SortAxis);
             Array.Sort(chunk.Items, 0, length, _comparer);
 
-            float2 s = float2.zero;
-            float2 s2 = float2.zero;
+            XFix64Vector2 s = XFix64Vector2.zero;
+            XFix64Vector2 s2 = XFix64Vector2.zero;
 
             for (int i = 0; i < length; i++)
             {
                 BroadphaseAABB a = chunk.Items[i];
-                float2 p = (a.AABB->Min + a.AABB->Max) * 0.5f;
+                XFix64Vector2 p = (a.AABB->Min + a.AABB->Max) * 0.5f;
 
                 s += p;
                 s2 += p * p;
@@ -81,7 +84,7 @@ namespace Physics
                 }
             }
 
-            float2 v = s2 / length - s * s / (length * length);
+            XFix64Vector2 v = s2 / length - s * s / (length * length);
 
             chunk.SortAxis = v[1] > v[0] ? 1 : 0;
         }

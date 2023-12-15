@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using XFixMath.NET;
 
 namespace BinarySerializer.Data
 {

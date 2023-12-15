@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using BinarySerializer.Data;
 using BinarySerializer.Serializers.Baselines;
+using XFixMath.NET;
 
 namespace BinarySerializer.Serializers
 {

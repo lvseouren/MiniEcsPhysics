@@ -15,7 +15,7 @@ namespace XFixMath.NET
     /// <summary>
     /// Represents a Q31.32 fixed-point number.
     /// </summary>
-    public partial struct XFix64: IEquatable<XFix64>, IComparable<XFix64>
+    public partial struct XFix64 : IEquatable<XFix64>, IComparable<XFix64>
     {
         readonly long m_rawValue;
 
@@ -586,11 +586,26 @@ namespace XFixMath.NET
             return new XFix64(flipVertical ? -nearestValue : nearestValue);
         }
 
+        /// <summary>
+        /// todo:返回cos值对应的angle，即cos(return) = x
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static XFix64 Acos(XFix64 x)
+        {
+            return Zero;
+        }
+
         public static XFix64 Clamp(XFix64 x, XFix64 min, XFix64 max)
         {
             x = x < min ? min : x;
             x = x > max ? max : x;
             return x;
+        }
+
+        public static XFix64 Clamp01(XFix64 x)
+        {
+            return Clamp(x, XFix64.Zero, XFix64.One);
         }
 
         public static XFix64 Max(XFix64 a, XFix64 b)
@@ -780,6 +795,11 @@ namespace XFixMath.NET
             return ((decimal)this).ToString();
         }
 
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            // Up to 10 decimal places
+            return ((decimal)this).ToString("0.##########", formatProvider);
+        }
         public static XFix64 FromRaw(long rawValue)
         {
             return new XFix64(rawValue);
@@ -969,7 +989,8 @@ namespace XFixMath.NET
         {
             //return new XFix64((long)(value * ONE));
             float f = (float)Math.Round(value, 4);
-            return new XFix64((long)(f * ONE));
+            var ret = new XFix64((long)(f * ONE));
+            return ret;
         }
         public static implicit operator float(XFix64 value)
         {
