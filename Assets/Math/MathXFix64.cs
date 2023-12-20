@@ -1,3 +1,5 @@
+using System;
+using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using XFixMath.NET;
 using Random = System.Random;
@@ -27,5 +29,6 @@ public partial class MathXFix64
     {
         return math.uint4(asuint(x.x), asuint(x.y), asuint(x.z), asuint(x.w));
     }
-    #endregion
+    #endregion   
+
 }

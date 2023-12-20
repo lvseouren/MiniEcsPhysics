@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Numerics;
 using MiniEcs.Core;
 using MiniEcs.Core.Systems;
 using Physics;
@@ -38,6 +39,9 @@ public class PhysicsScene : MonoBehaviour
 	
 	private void Start()
 	{
+		Debug.Log($" «∑Ò÷ß≥÷SIMD£∫{Vector.IsHardwareAccelerated}");
+		SIMD_Test.Test();
+
 		EcsComponentType<TransformComponent>.Register();
 		EcsComponentType<RigBodyComponent>.Register();
 		EcsComponentType<ColliderComponent>.Register();

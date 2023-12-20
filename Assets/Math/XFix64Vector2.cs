@@ -2,7 +2,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
-using UnityEngine;
 using XFixMath.NET;
 
 public struct XFix64Vector2
