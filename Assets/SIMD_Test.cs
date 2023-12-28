@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using UnityEngine;
+using XFixMath.NET;
 using Debug = UnityEngine.Debug;
 using Random = System.Random;
 
@@ -65,6 +66,8 @@ internal class SIMD_Test
         return result;
     }
 
+    public static string testInfo1;
+    public static string testInfo2;
     public static void Test()
     {
         Debug.Log($"是否支持SIMD：{Vector.IsHardwareAccelerated}");
@@ -84,7 +87,7 @@ internal class SIMD_Test
             result = NormalCalc.AddTotal(nums);
         }
         stopwatch.Stop();
-        Debug.Log($"普通连+ 结果={result},耗时：{stopwatch.ElapsedMilliseconds}");
+        Debug.Log($"普通连+ 结果={result},\n耗时：{stopwatch.ElapsedMilliseconds}");
 
         //Vector
         stopwatch = Stopwatch.StartNew();
@@ -93,7 +96,44 @@ internal class SIMD_Test
             result = AverageSIMD(nums);
         }
         stopwatch.Stop();
-        Debug.Log($"Vector连+ 结果={result},耗时：{stopwatch.ElapsedMilliseconds}");
+        Debug.Log($"Vector连+ 结果={result},\n耗时：{stopwatch.ElapsedMilliseconds}");
     }
+
+    //public static void TestXFix64SIMD()
+    //{
+    //    int count = 100000;
+    //    XFix64Vector4[] vecs = new XFix64Vector4[count];
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        vecs[i] = MathXFix64.RandomXFix64Vector4();
+    //    }
+
+    //    //普通+
+    //    Stopwatch stopwatch = Stopwatch.StartNew();
+    //    XFix64Vector4 result = default;
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        result = vecs[i] + vecs[i];
+    //    }
+    //    stopwatch.Stop();
+    //    testInfo1 = ($"XFix64Vector4 普通加法: 结果={result},\n耗时：{stopwatch.ElapsedMilliseconds}");
+    //    Debug.Log(testInfo1);
+
+    //    //SIMD+
+    //    stopwatch = Stopwatch.StartNew();
+        
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        result = XFix64Vector4.SIMD_ADD(vecs[i], vecs[i]);
+    //    }
+    //    stopwatch.Stop();
+    //    testInfo2 = ($"XFix64Vector4 SIMD加法: 结果={result},\n耗时：{stopwatch.ElapsedMilliseconds}");
+    //    Debug.Log(testInfo2);
+
+    //    XFix64Vector4 a = new XFix64Vector4(1);
+    //    XFix64Vector4 b = new XFix64Vector4(2);
+    //    var c = a + b;
+    //    var d = XFix64Vector4.SIMD_ADD(a, b);
+    //}
 }    
 

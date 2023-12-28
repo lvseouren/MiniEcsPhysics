@@ -1,6 +1,7 @@
 using MiniEcs.Core;
 using MiniEcs.Core.Systems;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -24,33 +25,36 @@ namespace Physics
 
         public void Update(XFix64 deltaTime, EcsWorld world)
         {
-            transformComponents.Clear();
-            velocities.Clear();
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            //transformComponents.Clear();
+            //velocities.Clear();
             world.Filter(_filter).ForEach((IEcsEntity entity, TransformComponent transform, RigBodyComponent rigBody) =>
             {
-                transformComponents.Add(transform);
-                velocities.Add(rigBody.Velocity);
-                //transform.Position += rigBody.Velocity * deltaTime;
+                //transformComponents.Add(transform);
+                //velocities.Add(rigBody.Velocity);
+                transform.Position += rigBody.Velocity * deltaTime;
             });
-            NativeArray<XFix64Vector2> pos = new NativeArray<XFix64Vector2>(transformComponents.Count, Allocator.TempJob);
-            NativeArray<XFix64Vector2> vel = new NativeArray<XFix64Vector2>(transformComponents.Count, Allocator.TempJob);
-            for (int i = 0; i < transformComponents.Count; i++)
-            {
-                pos[i] = transformComponents[i].Position;
-                vel[i] = velocities[i];
-            }
-            var job = new TestJob2()
-            {
-                positions = pos,
-                velocities = vel,
-                deltaTime = deltaTime,
-            };
-            var jobHandler = job.Schedule(transformComponents.Count,64);
-            jobHandler.Complete();
-            for(int i = 0; i < transformComponents.Count; ++i)
-            {
-                transformComponents[i].Position = pos[i];
-            }
+            //NativeArray<XFix64Vector2> pos = new NativeArray<XFix64Vector2>(transformComponents.Count, Allocator.TempJob);
+            //NativeArray<XFix64Vector2> vel = new NativeArray<XFix64Vector2>(transformComponents.Count, Allocator.TempJob);
+            //for (int i = 0; i < transformComponents.Count; i++)
+            //{
+            //    pos[i] = transformComponents[i].Position;
+            //    vel[i] = velocities[i];
+            //}
+            //var job = new TestJob2()
+            //{
+            //    positions = pos,
+            //    velocities = vel,
+            //    deltaTime = deltaTime,
+            //};
+            //var jobHandler = job.Schedule(transformComponents.Count,64);
+            //jobHandler.Complete();
+            //for(int i = 0; i < transformComponents.Count; ++i)
+            //{
+            //    transformComponents[i].Position = pos[i];
+            //}
+            stopwatch.Stop();
+            UnityEngine.Debug.Log($"ºÄÊ±£º{stopwatch.ElapsedMilliseconds}");
         }
 
         [BurstCompile]
@@ -60,7 +64,6 @@ namespace Physics
             public NativeArray<XFix64Vector2> velocities;
             public float deltaTime;
 
-            [BurstCompile]
             public void Execute(int index)
             {
                 positions[index] += velocities[index] * deltaTime;

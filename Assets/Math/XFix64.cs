@@ -14,32 +14,129 @@ namespace XFixMath.NET
         const ulong MAX_INT = 0x7FFFFFFFFF;  //（SHIFTING == 8）long.MaxValue >> Fix64AL_PLACES   整数部分最大值 549,755,813,887    约5497亿 
         const int MIN_FRA = 7;//（SHIFTING == 8）不强制取四位的情况下小数部分最大位数（十进制），       
 
-        // Precision of this type is 2^-32, that is 2,3283064365386962890625E-10
-        public static readonly decimal Precision = (decimal)(new XFix64(1L));//0.00000000023283064365386962890625m;
-        public static readonly XFix64 MaxValue = new XFix64(LONG_MAX_VALUE);
-        public static readonly XFix64 MinValue = new XFix64(LONG_MIN_VALUE);
-        public static readonly XFix64 One = new XFix64(ONE);
-        public static readonly XFix64 Zero = new XFix64();
-        public static readonly XFix64 MaxValueSqrt = Sqrt(MaxValue);
 
-        public static readonly XFix64 Half = (XFix64)0.5f;
-        public static readonly XFix64 Ten = (XFix64)10;
-        public static readonly XFix64 Hundred = (XFix64)100;
-        public static readonly XFix64 OneHundredThousand = (XFix64)100000;
-        public static readonly XFix64 PositiveInfinity = MaxValue;//兼容性考虑，代替float.PositiveInfinity
+
+        // Precision of this type is 2^-32, that is 2,3283064365386962890625E-10
+        public static decimal Precision
+        {
+            get
+            {
+                return (decimal)(new XFix64(1L));//0.00000000023283064365386962890625m;
+            }
+        }
+        public static XFix64 MaxValue
+        {
+            get
+            {
+                return new XFix64(LONG_MAX_VALUE);
+            }
+        }
+        public static XFix64 MinValue
+        {
+            get
+            {
+                return new XFix64(LONG_MIN_VALUE);
+            }
+        }
+        public static XFix64 One
+        {
+            get
+            {
+                return new XFix64(ONE);
+            }
+        }
+        public static XFix64 Zero
+        {
+            get
+            {
+                return new XFix64();
+            }
+        }
+        public static XFix64 MaxValueSqrt
+        {
+            get
+            {
+                return Sqrt(MaxValue);
+            }
+        }
+
+        public static XFix64 Half
+        {
+            get
+            {
+                return (XFix64)0.5f;
+            }
+        }
+        public static XFix64 Ten
+        {
+            get
+            {
+                return (XFix64)10;
+            }
+        }
+        public static XFix64 Hundred
+        {
+            get
+            {
+                return (XFix64)100;
+            }
+        }
+        public static XFix64 OneHundredThousand
+        {
+            get
+            {
+                return (XFix64)100000;
+            }
+        }
+        public static XFix64 PositiveInfinity = MaxValue;//兼容性考虑，代替float.PositiveInfinity
         /// <summary>
         /// The value of Pi
         /// </summary>
-        public static readonly XFix64 Pi = new XFix64(PI);
-        public static readonly XFix64 PiOver2 = new XFix64(PI_OVER_2);
-        public static readonly XFix64 PiTimes2 = new XFix64(PI_TIMES_2);
-        public static readonly XFix64 PiInv = (XFix64)0.3183098861837906715377675267M;
-        public static readonly XFix64 PiOver2Inv = (XFix64)0.6366197723675813430755350535M;
+        public static XFix64 Pi
+        {
+            get
+            {
+                return new XFix64(PI);
+            }
+        }
+        public static XFix64 PiOver2
+        {
+            get
+            {
+                return new XFix64(PI_OVER_2);
+            }
+        }
+        public static XFix64 PiTimes2
+        {
+            get
+            {
+                return new XFix64(PI_TIMES_2);
+            }
+        }
+        public static XFix64 PiInv
+        {
+            get
+            {
+                return (XFix64)0.3183098861837906715377675267M;
+            }
+        }
+        public static XFix64 PiOver2Inv
+        {
+            get
+            {
+                return (XFix64)0.6366197723675813430755350535M;
+            }
+        }
 
+        static XFix64 LutInterval
+        {
+            get
+            {
+                return (XFix64)(LUT_SIZE - 1) / PiOver2;
+            }
+        }
 
         const int SHIFTING = 8; // 小数点 从中点向右移位；作用：当值为正时，扩大整数范围
-
-        static readonly XFix64 LutInterval = (XFix64)(LUT_SIZE - 1) / PiOver2;
 
         const long LONG_MAX_VALUE = long.MaxValue;
         const long LONG_MIN_VALUE = long.MinValue;
