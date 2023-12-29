@@ -313,11 +313,11 @@ public struct XFix64Vector3
         return new XFix64Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
-    public static long SqrMagnitude(XFix64Vector3 a)
+    public static XFix64 SqrMagnitude(XFix64Vector3 a)
     {
-        long x1 = a.x;
-        long y1 = a.y;
-        long z1 = a.z;
+        XFix64 x1 = a.x;
+        XFix64 y1 = a.y;
+        XFix64 z1 = a.z;
         return x1 * x1 + y1 * y1 + z1 * z1;
     }
 

@@ -30,5 +30,9 @@ public partial class MathXFix64
         return math.uint4(asuint(x.x), asuint(x.y), asuint(x.z), asuint(x.w));
     }
     #endregion   
-
+    public static XFix64Vector2 RandomXFix64Vec2()
+    {
+        var num = random.NextXFix64();
+        return new XFix64Vector2(num, num);
+    }
 }

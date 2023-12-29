@@ -57,4 +57,9 @@ public static class RandomExtensionMethods
         var value = random.NextLong(min.RawValue, max.RawValue);
         return XFix64.CreateRawFix64(value);
     }
+
+    public static XFix64 NextXFix64(this Random random)
+    {
+        return random.NextXFix64(XFix64.MinValue, XFix64.MaxValue);
+    }
 }

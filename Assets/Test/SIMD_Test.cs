@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+using Unity.Burst;
+using Unity.Mathematics;
 using UnityEngine;
 using XFixMath.NET;
 using Debug = UnityEngine.Debug;
@@ -121,7 +123,7 @@ internal class SIMD_Test
 
     //    //SIMD+
     //    stopwatch = Stopwatch.StartNew();
-        
+
     //    for (int i = 0; i < count; i++)
     //    {
     //        result = XFix64Vector4.SIMD_ADD(vecs[i], vecs[i]);
@@ -135,5 +137,39 @@ internal class SIMD_Test
     //    var c = a + b;
     //    var d = XFix64Vector4.SIMD_ADD(a, b);
     //}
-}    
+    public static void TestBurst()
+    {
+        int count = 100000;
+        var vec2 = MathXFix64.RandomXFix64Vec2();
+        XFix64Vector3 temp;
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        for (int i = 0; i < count; i++)
+        {
+            temp = vec2.normalized;
+        }
+        stopwatch.Stop();
+        var testInfo1 = ($"原版耗时：{stopwatch.ElapsedMilliseconds}");
+        Debug.Log(testInfo1);
+
+        stopwatch = Stopwatch.StartNew();
+        for (int i = 0; i < count; i++)
+        {
+            temp = vec2.normalizedBurst;
+        }
+        stopwatch.Stop();
+        testInfo1 = ($"Burst耗时：{stopwatch.ElapsedMilliseconds}");
+        Debug.Log(testInfo1);
+    }
+
+}
+
+[BurstCompile]
+public class MyBurstUtilityClass
+{
+    [BurstCompile]
+    public static void BurstCompiled_MultiplyAdd(in float4 mula, in float4 mulb, in float4 add, out float4 result)
+    {
+        result = mula * mulb + add;
+    }
+}
 

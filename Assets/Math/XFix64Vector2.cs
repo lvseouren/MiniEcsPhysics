@@ -1,9 +1,11 @@
 ﻿#if true
 using System;
 using System.Runtime.CompilerServices;
+using Unity.Burst;
 using Unity.Mathematics;
 using XFixMath.NET;
 
+[BurstCompile]
 public struct XFix64Vector2
 {
     public XFix64 x;
@@ -112,6 +114,22 @@ public struct XFix64Vector2
         }
     }
 
+    public XFix64Vector3 normalizedBurst
+    {
+        get
+        {
+            NormalizeBurst(ref this, out XFix64Vector3 result);
+            return result;
+        }
+    }
+
+    [BurstCompile]
+	public static void NormalizeBurst(ref XFix64Vector2 value, out XFix64Vector3 result)
+	{
+        XFix64Vector3 temp = new XFix64Vector3 (value);
+		result = temp.normalized;
+	}
+
     public XFix64Vector3 normalized
     {
         get
@@ -120,11 +138,11 @@ public struct XFix64Vector2
         }
     }
 
-	public static XFix64Vector3 Normalize(XFix64Vector2 value)
-	{
-        XFix64Vector3 temp = new XFix64Vector3 (value);
-		return temp.normalized;
-	}
+    public static XFix64Vector3 Normalize(XFix64Vector2 value)
+    {
+        XFix64Vector3 temp = new XFix64Vector3(value);
+        return temp.normalized;
+    }
 
     public XFix64 sqrMagnitude
     {
@@ -227,7 +245,7 @@ public struct XFix64Vector2
         return new XFix64Vector2(a.x * b.x, a.y * b.y);
     }
 
-    public static int SqrMagnitude(XFix64Vector2 a)
+    public static XFix64 SqrMagnitude(XFix64Vector2 a)
     {
         return a.x * a.x + a.y * a.y;
     }
@@ -255,6 +273,17 @@ public struct XFix64Vector2
         var mag = magnitude;
         if (mag != XFix64.Zero)
         {        
+            x = x / mag;
+            y = y / mag;
+        }
+    }
+
+    [BurstCompile]
+    public void NormalizeWithBurst()
+    {
+        var mag = magnitude;
+        if (mag != XFix64.Zero)
+        {
             x = x / mag;
             y = y / mag;
         }
@@ -309,6 +338,7 @@ public struct XFix64Vector2
     {
         return new XFix64Vector2(a.x / d, a.y / d);
     }
+
     public static XFix64Vector2 operator /(XFix64Vector2 a, XFix64 d)
     {
         return new XFix64Vector2(a.x / d, a.y / d);
