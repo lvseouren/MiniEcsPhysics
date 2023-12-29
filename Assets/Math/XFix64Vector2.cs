@@ -118,13 +118,13 @@ public struct XFix64Vector2
     {
         get
         {
-            NormalizeBurst(ref this, out XFix64Vector3 result);
+            NormalizeBurst(in this, out XFix64Vector3 result);
             return result;
         }
     }
 
     [BurstCompile]
-	public static void NormalizeBurst(ref XFix64Vector2 value, out XFix64Vector3 result)
+	public static void NormalizeBurst(in XFix64Vector2 value, out XFix64Vector3 result)
 	{
         XFix64Vector3 temp = new XFix64Vector3 (value);
 		result = temp.normalized;
@@ -192,7 +192,8 @@ public struct XFix64Vector2
     //
     public static XFix64 Angle(XFix64Vector2 from, XFix64Vector2 to)
     {
-        return XFix64.Acos(XFix64.Clamp(XFix64Vector3.Dot(from.normalized, to.normalized), -XFix64.One, XFix64.One));
+        XFix64Vector3.Dot(from.normalized, to.normalized, out var dotResult);
+        return XFix64.Acos(XFix64.Clamp(dotResult, -XFix64.One, XFix64.One));
     }
 
     public static XFix64Vector2 ClampMagnitude(XFix64Vector2 vector, int maxLength)

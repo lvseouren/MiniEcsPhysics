@@ -33,6 +33,12 @@ public partial class MathXFix64
     public static XFix64Vector2 RandomXFix64Vec2()
     {
         var num = random.NextXFix64();
-        return new XFix64Vector2(num, num);
+        return new XFix64Vector2(num);
+    }
+
+    public static XFix64Vector3 RandomXFix64Vec3()
+    {
+        var num = random.NextXFix64();
+        return new XFix64Vector3(num);
     }
 }

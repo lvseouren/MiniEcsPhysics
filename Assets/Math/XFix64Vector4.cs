@@ -468,9 +468,6 @@ namespace XFixMath.NET
             return new bool4(lhs != rhs.x, lhs != rhs.y, lhs != rhs.z, lhs != rhs.w);
         }
 
-
-
-
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public XFix64Vector4 xxxx
         {

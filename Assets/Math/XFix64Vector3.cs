@@ -1,9 +1,12 @@
 ﻿#if true
 using System;
+using Unity.Burst;
 using UnityEngine;
 using XFixMath.NET;
 
+
 [Serializable]
+[BurstCompile]
 public struct XFix64Vector3
 {
 
@@ -123,7 +126,9 @@ public struct XFix64Vector3
     {
         get
         {
-            return XFix64.Sqrt(SqrMagnitude(this));
+            SqrMagnitude(in this, out var result);
+            var result2 = XFix64.Sqrt(result);
+            return result2;
         }
     }
 
@@ -131,29 +136,35 @@ public struct XFix64Vector3
     {
         get
         {
-            return Normalize(this);
+            Normalize(in this, out var result);
+            return result;
         }
     }
 
-    public long sqrMagnitude
+    public XFix64 sqrMagnitude
     {
         get
-        {          
-            return SqrMagnitude(this);
+        {
+            SqrMagnitude(in this, out var result);
+            return result;            
         }
     }
 
-    public static XFix64Vector3 CreateXVector3(Vector3 vec3)
+    [BurstCompile]
+    public static void CreateXVector3(in Vector3 vec3, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(vec3);
+        result = new XFix64Vector3(vec3);
     }
-    public static XFix64Vector3 CreateXVector3(int x, int y, int z)
+    [BurstCompile]
+    public static void CreateXVector3(int x, int y, int z, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(x, y, z);
+        result = new XFix64Vector3(x, y, z);
     }
-    public static XFix64Vector3 CreateXVector3(XFix64 x, XFix64 y, XFix64 z)
+
+    [BurstCompile]
+    public static void CreateXVector3(in XFix64 x, in XFix64 y, in XFix64 z, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(x, y, z);
+        result = new XFix64Vector3(x, y, z);
     }
 
 
@@ -198,24 +209,29 @@ public struct XFix64Vector3
     //
     // Static Methods
     //
-    public static XFix64 Angle(XFix64Vector3 from, XFix64Vector3 to)
+    [BurstCompile]
+    public static void Angle(in XFix64Vector3 from, in XFix64Vector3 to, out XFix64 result)
     {
-        return XFix64.Acos(XFix64.Clamp(Dot(from.normalized, to.normalized), -XFix64.One, XFix64.One));
+        Dot(from.normalized, to.normalized, out var dotResult);
+        result = XFix64.Acos(XFix64.Clamp(dotResult, -XFix64.One, XFix64.One));
     }
 
-    public static XFix64Vector3 ClampMagnitude(XFix64Vector3 vector, int maxLength)
+    [BurstCompile]
+    public static void ClampMagnitude(in XFix64Vector3 vector, int maxLength, out XFix64Vector3 result)
     {
         if (vector.sqrMagnitude > maxLength * maxLength)
         {
             vector.Normalize();
-            return vector * maxLength;
+            result = vector * maxLength;
+            return;
         }
-        return vector;
+        result = vector;
     }
 
-    public static XFix64Vector3 Cross(XFix64Vector3 lhs, XFix64Vector3 rhs)
+    [BurstCompile]
+    public static void Cross(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
+        result = new XFix64Vector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
     }
 
     public XFix64Vector2 ToVector2()
@@ -223,59 +239,73 @@ public struct XFix64Vector3
         return new XFix64Vector2(x, y);
     }
 
-    public static XFix64 Distance(XFix64Vector3 a, XFix64Vector3 b)
+    [BurstCompile]
+    public static void Distance(in XFix64Vector3 a, in XFix64Vector3 b, out XFix64 result)
     {
         XFix64 x = (a.x - b.x);
         XFix64 y = (a.y - b.y);
         XFix64 z = (a.z - b.z);
 
-        return XFix64.Sqrt(x * x + y * y + z * z);  
+        result = XFix64.Sqrt(x * x + y * y + z * z);  
     }
 
-    public static XFix64 Dot(XFix64Vector3 lhs, XFix64Vector3 rhs)
+    [BurstCompile]
+    public static void Dot(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64 result)
     {
-        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+        result = lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
     }
 
-    public static XFix64Vector3 Lerp(XFix64Vector3 from, XFix64Vector3 to, XFix64 t)
+    [BurstCompile]
+    public static void Lerp(in XFix64Vector3 from, in XFix64Vector3 to, in XFix64 tt, out XFix64Vector3 result)
     {
-        t = XFix64.Clamp01(t);
-		return new XFix64Vector3((from.x + (to.x - from.x) * t), (from.y + (to.y - from.y) * t), (from.z + (to.z - from.z) * t));
+        var t = XFix64.Clamp01(tt);
+		result = new XFix64Vector3((from.x + (to.x - from.x) * t), (from.y + (to.y - from.y) * t), (from.z + (to.z - from.z) * t));
     }
 
-    public static XFix64 Magnitude(XFix64Vector3 a)
+    [BurstCompile]
+    public static void Magnitude(in XFix64Vector3 a, out XFix64 result)
     {
-        return (XFix64)Math.Sqrt(SqrMagnitude(a));
+        SqrMagnitude(a, out var temp);
+        result = XFix64.Sqrt(temp);
     }
 
-    public static XFix64Vector3 Max(XFix64Vector3 lhs, XFix64Vector3 rhs)
+    [BurstCompile]
+    public static void Max(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(XFix64.Max(lhs.x, rhs.x), XFix64.Max(lhs.y, rhs.y), XFix64.Max(lhs.z, rhs.z));
+        result = new XFix64Vector3(XFix64.Max(lhs.x, rhs.x), XFix64.Max(lhs.y, rhs.y), XFix64.Max(lhs.z, rhs.z));
     }
 
-    public static XFix64Vector3 Min(XFix64Vector3 lhs, XFix64Vector3 rhs)
+    [BurstCompile]
+    public static void Min(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(XFix64.Min(lhs.x, rhs.x), XFix64.Min(lhs.y, rhs.y), XFix64.Min(lhs.z, rhs.z));
+        result = new XFix64Vector3(XFix64.Min(lhs.x, rhs.x), XFix64.Min(lhs.y, rhs.y), XFix64.Min(lhs.z, rhs.z));
     }
 
-    public static XFix64Vector3 MoveTowards(XFix64Vector3 current, XFix64Vector3 target, XFix64 maxDistanceDelta)
+    [BurstCompile]
+    public static void MoveTowards(in XFix64Vector3 current, in XFix64Vector3 target, in XFix64 maxDistanceDelta, out XFix64Vector3 result)
     {
         XFix64Vector3 a = target - current;
         XFix64 magnitude = a.magnitude;
         if (magnitude <= maxDistanceDelta || magnitude.Equals(XFix64.Zero))
         {
-            return target;
+            result = target;
+            return;
         }
-        return current + (a / magnitude * maxDistanceDelta);
+        result = current + (a / magnitude * maxDistanceDelta);
+        return;
     }
 
-    public static XFix64Vector3 Normalize(XFix64Vector3 value)
+    [BurstCompile]
+    public static void Normalize(in XFix64Vector3 value, out XFix64Vector3 result)
     {
         var magnitude = value.magnitude;
         if (magnitude == XFix64.Zero)
-            return value;
+        {
+            result = value;
+            return;
+        }
         XFix64Vector3 v = value / magnitude;
-        return v;
+        result = v;
     }
 
     //public static void OrthoNormalize(ref XDVector3 normal, ref XDVector3 tangent, ref XDVector3 binormal)
@@ -288,37 +318,54 @@ public struct XFix64Vector3
     //    XDVector3.Internal_OrthoNormalize2(ref normal, ref tangent);
     //}
 
-    public static XFix64Vector3 Project(XFix64Vector3 vector, XFix64Vector3 onNormal)
+    [BurstCompile]
+    public static void Project(in XFix64Vector3 vector, in XFix64Vector3 onNormal, out XFix64Vector3 result)
     {
-        XFix64 num = Dot(onNormal, onNormal);
+        Dot(onNormal, onNormal, out var num);
         if (num == XFix64.Zero)
         {
-            return zero;
+            result = zero;
+            return;
         }
-        return onNormal * Dot(vector, onNormal) / num;
+        Dot(vector, onNormal, out var dotResult);
+        result = onNormal * dotResult / num;
     }
 
-    public static XFix64Vector3 ProjectOnPlane(XFix64Vector3 vector, XFix64Vector3 planeNormal)
+    [BurstCompile]
+    public static void ProjectOnPlane(in XFix64Vector3 vector, in XFix64Vector3 planeNormal, out XFix64Vector3 result)
     {
-        return vector - Project(vector, planeNormal);
+        Project(vector, planeNormal, out var temp);
+        result = vector - temp;
     }
 
-    public static XFix64Vector3 Reflect(XFix64Vector3 inDirection, XFix64Vector3 inNormal)
+    [BurstCompile]
+    public static void Reflect(in XFix64Vector3 inDirection, in XFix64Vector3 inNormal, out XFix64Vector3 result)
     {
-        return -2 * Dot(inNormal, inDirection) * inNormal + inDirection;
+        Dot(inNormal, inDirection, out var dotResult);
+        result = -2 * dotResult * inNormal + inDirection;
     }
 
-    public static XFix64Vector3 Scale(XFix64Vector3 a, XFix64Vector3 b)
+    [BurstCompile]
+    public static void Scale(in XFix64Vector3 a, in XFix64Vector3 b, out XFix64Vector3 result)
     {
-        return new XFix64Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+        result = new XFix64Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
-    public static XFix64 SqrMagnitude(XFix64Vector3 a)
+    //public static XFix64 SqrMagnitude(XFix64Vector3 a)
+    //{
+    //    XFix64 x1 = a.x;
+    //    XFix64 y1 = a.y;
+    //    XFix64 z1 = a.z;
+    //    return x1 * x1 + y1 * y1 + z1 * z1;
+    //}
+
+    [BurstCompile]
+    public static void SqrMagnitude(in XFix64Vector3 a, out XFix64 result)
     {
         XFix64 x1 = a.x;
         XFix64 y1 = a.y;
         XFix64 z1 = a.z;
-        return x1 * x1 + y1 * y1 + z1 * z1;
+        result = x1 * x1 + y1 * y1 + z1 * z1;
     }
 
     //
@@ -436,23 +483,35 @@ public struct XFix64Vector3
 
     public static XFix64Vector3 operator *(XFix64Vector3 a, XFix64 d)
     {
-        return CreateXVector3(a.x * d, a.y * d, a.z * d);
+        var x = a.x * d;
+        var y = a.y * d;
+        var z = a.z * d;
+        CreateXVector3(in x, in y, in z, out var result);
+        return result;
     }
     public static XFix64Vector3 operator *(XFix64 d, XFix64Vector3 a)
     {
-        return CreateXVector3(a.x * d, a.y * d, a.z * d);
+        var x = a.x * d;
+        var y = a.y * d;
+        var z = a.z * d;
+        CreateXVector3(in x, in y, in z, out var result);
+        return result;      
     }
 
     public static XFix64Vector3 operator *(int d, XFix64Vector3 a)
     {
-        return new XFix64Vector3(a.x * d, a.y * d, a.z * d);
+        var x = a.x * d;
+        var y = a.y * d;
+        var z = a.z * d;
+        CreateXVector3(in x, in y, in z, out var result);
+        return result;        
     }
 
     public static XFix64Vector3 operator %(XFix64Vector3 a, XFix64Vector3 b)
     {
-        int nx = a.y * b.z - a.z * b.y;
-        int ny = a.z * b.x - a.x * b.z;
-        int nz = a.x * b.y - a.y * b.x;
+        XFix64 nx = a.y * b.z - a.z * b.y;
+        XFix64 ny = a.z * b.x - a.x * b.z;
+        XFix64 nz = a.x * b.y - a.y * b.x;
         return new XFix64Vector3(nx,ny,nz);
     }
     public static XFix64Vector3 operator -(XFix64Vector3 a, XFix64Vector3 b)
