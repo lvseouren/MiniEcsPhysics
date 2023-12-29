@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Unity.Burst;
 
 namespace XFixMath.NET
 {
@@ -7,6 +8,7 @@ namespace XFixMath.NET
     /// <summary>
     /// Represents a Q31.32 fixed-point number.
     /// </summary>
+    [BurstCompile]
     public partial struct XFix64 : IEquatable<XFix64>, IComparable<XFix64>
     {
         readonly long m_rawValue;
@@ -56,7 +58,8 @@ namespace XFixMath.NET
         {
             get
             {
-                return Sqrt(MaxValue);
+                Sqrt(MaxValue, out var result);
+                return result;
             }
         }
 
@@ -161,7 +164,8 @@ namespace XFixMath.NET
         /// Returns a number indicating the sign of a XFix64 number.
         /// Returns 1 if the value is positive, 0 if is 0, and -1 if it is negative.
         /// </summary>
-        public static int Sign(XFix64 value)
+        [BurstCompile]
+        public static int Sign(in XFix64 value)
         {
             return
                 value.m_rawValue < 0 ? -1 :
@@ -174,15 +178,17 @@ namespace XFixMath.NET
         /// Returns the absolute value of a XFix64 number.
         /// Note: Abs(XFix64.MinValue) == XFix64.MaxValue.
         /// </summary>
-        public static XFix64 Abs(XFix64 value)
+        [BurstCompile]
+        public static void Abs(in XFix64 value, out XFix64 result)
         {
             if (value.m_rawValue == LONG_MIN_VALUE) {
-                return MaxValue;
+                result = MaxValue;
+                return;
             }
 
             // branchless implementation, see http://www.strchr.com/optimized_abs_function
             var mask = value.m_rawValue >> 63;
-            return new XFix64((value.m_rawValue + mask) ^ mask);
+            result = new XFix64((value.m_rawValue + mask) ^ mask);
         }
 
         /// <summary>
@@ -190,49 +196,56 @@ namespace XFixMath.NET
         /// FastAbs(XFix64.MinValue) is undefined.
         /// 最小值无定义。 未判断最小值溢出
         /// </summary>
-        public static XFix64 FastAbs(XFix64 value)
+        [BurstCompile]
+        public static void FastAbs(in XFix64 value, out XFix64 result)
         {
             // branchless implementation, see http://www.strchr.com/optimized_abs_function
             var mask = value.m_rawValue >> 63;
-            return new XFix64((value.m_rawValue + mask) ^ mask);
+            result = new XFix64((value.m_rawValue + mask) ^ mask);
         }
 
 
         /// <summary>
         /// Returns the largest integer less than or equal to the specified number.
         /// </summary>
-        public static XFix64 Floor(XFix64 value)
+        [BurstCompile]
+        public static void Floor(in XFix64 value, out XFix64 result)
         {
             // Just zero out the Fix64al part
-            return new XFix64((long)((ulong)value.m_rawValue & INTEGER));
+            result = new XFix64((long)((ulong)value.m_rawValue & INTEGER));
         }
 
         /// <summary>
         /// Returns the smallest integral value that is greater than or equal to the specified number.
         /// </summary>
-        public static XFix64 Ceiling(XFix64 value)
+        [BurstCompile]
+        public static void Ceiling(in XFix64 value, out XFix64 result)
         {
             var hasFix64alPart = (value.m_rawValue & FRACTION) != 0;
-            return hasFix64alPart ? Floor(value) + One : value;
+            Floor(value, out var flr);
+            result = hasFix64alPart ? flr + One : value;
         }
 
         /// <summary>
         /// Rounds a value to the nearest integral value.
         /// If the value is halfway between an even and an uneven value, returns the even value.
         /// </summary>
-        public static XFix64 Round(XFix64 value)
+        [BurstCompile]
+        public static void Round(in XFix64 value, out XFix64 result)
         {
             var Fix64alPart = value.m_rawValue & FRACTION;
-            var integralPart = Floor(value);
+            Floor(value, out var integralPart);
             if (Fix64alPart < HalfCONST) {
-                return integralPart;
+                result = integralPart;
+                return;
             }
             if (Fix64alPart > HalfCONST) {
-                return integralPart + One;
+                result = integralPart + One;
+                return;
             }
             // if number is halfway between two values, round to the nearest even number
             // this is the method used by System.Math.Round().
-            return (integralPart.m_rawValue & ONE) == 0
+            result = (integralPart.m_rawValue & ONE) == 0
                        ? integralPart
                        : integralPart + One;
         }
@@ -256,9 +269,10 @@ namespace XFixMath.NET
         /// <summary>
         /// Adds x and y witout performing overflow checking. Should be inlined by the CLR.
         /// </summary>
-        public static XFix64 FastAdd(XFix64 x, XFix64 y)
+        [BurstCompile]
+        public static void FastAdd(in XFix64 x, in XFix64 y, out XFix64 result)
         {
-            return new XFix64(x.m_rawValue + y.m_rawValue);
+            result = new XFix64(x.m_rawValue + y.m_rawValue);
         }
 
         /// <summary>
@@ -281,11 +295,13 @@ namespace XFixMath.NET
         /// Subtracts y from x witout performing overflow checking. Should be inlined by the CLR.
         /// 未检测溢出
         /// </summary>
-        public static XFix64 FastSub(XFix64 x, XFix64 y)
+        [BurstCompile]
+        public static void FastSub(in XFix64 x, in XFix64 y, out XFix64 result)
         {
-            return new XFix64(x.m_rawValue - y.m_rawValue);
+            result = new XFix64(x.m_rawValue - y.m_rawValue);
         }
 
+        [BurstCompile]
         static long AddOverflowHelper(long x, long y, ref bool overflow)
         {
             var sum = x + y;
@@ -373,7 +389,8 @@ namespace XFixMath.NET
         /// 未检测溢出
         /// Useful for performance-critical code where the values are guaranteed not to cause overflow
         /// </summary>
-        public static XFix64 FastMul(XFix64 x, XFix64 y)
+        [BurstCompile]
+        public static void FastMul(in XFix64 x, in XFix64 y, out XFix64 result)
         {
 
             var xl = x.m_rawValue;
@@ -397,11 +414,12 @@ namespace XFixMath.NET
             var hiResult = hihi << Fix64AL_PLACES;
 
             var sum = (long)loResult + midResult1 + midResult2 + hiResult;
-            return new XFix64(sum);
+            result = new XFix64(sum);
         }
 
         //dotnet4.5 以上版本可用 AggressiveInlining
         //[MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
+        [BurstCompile]
         static int CountLeadingZeroes(ulong x)
         {
             int result = 0;
@@ -410,10 +428,12 @@ namespace XFixMath.NET
             return result;
         }
 
-        public static XFix64 test_div(XFix64 x, XFix64 y)
+        [BurstCompile]
+        public static void test_div(in XFix64 x, in XFix64 y, out XFix64 result)
         {
             if (x == 0) {
-                return XFix64.Zero;
+                result = XFix64.Zero;
+                return;
             }
             if (y == 0) {
                 throw new DivideByZeroException();
@@ -427,13 +447,15 @@ namespace XFixMath.NET
             if (d >= (0xFFFFFFFFFFFFFFFF >> Fix64AL_PLACES)) {
                 //XLog.LogError("XFix64 divider overflowed");
                 if (sign > 0) {
-                    return MaxValue;
+                    result = MaxValue;
+                    return;
                 }
                 else {
-                    return MinValue;
+                    result = MinValue;
+                    return;
                 }
             }
-            return new XFix64(((long)(d << Fix64AL_PLACES) + (long)((((x_ul % y_ul) << Fix64AL_PLACES) / y_ul))) * sign);
+            result = new XFix64(((long)(d << Fix64AL_PLACES) + (long)((((x_ul % y_ul) << Fix64AL_PLACES) / y_ul))) * sign);
 
         }
 
@@ -560,7 +582,8 @@ namespace XFixMath.NET
         /// <exception cref="ArgumentOutOfRangeException">
         /// The argument was negative.
         /// </exception>
-        public static XFix64 Sqrt(XFix64 x)
+        [BurstCompile]
+        public static void Sqrt(in XFix64 x, out XFix64 ret)
         {
             var xl = x.m_rawValue;
             if (xl < 0) {
@@ -619,7 +642,7 @@ namespace XFixMath.NET
             if (num > result) {
                 ++result;
             }
-            return new XFix64((long)result);
+            ret = new XFix64((long)result);
         }
 
         /// <summary>
@@ -628,7 +651,7 @@ namespace XFixMath.NET
         /// It may lose accuracy as the value of x grows.
         /// Performance: about 25% slower than Math.Sin() in x64, and 200% slower in x86.
         /// </summary>
-        public static XFix64 Sin(XFix64 x)
+        public static void Sin(in XFix64 x, out XFix64 result)
         {
             bool flipHorizontal, flipVertical;
             var clampedL = ClampSinValue(x.m_rawValue, out flipHorizontal, out flipVertical);
@@ -636,9 +659,9 @@ namespace XFixMath.NET
 
             // Find the two closest values in the LUT and perform linear interpolation
             // This is what kills the performance of this function on x86 - x64 is fine though
-            var rawIndex = FastMul(clamped, LutInterval);
-            var roundedIndex = Round(rawIndex);
-            var indexError = FastSub(rawIndex, roundedIndex);
+            FastMul(clamped, LutInterval, out var rawIndex);
+            Round(rawIndex, out var roundedIndex);
+            FastSub(rawIndex, roundedIndex, out var indexError);
 
             var nearestValue = new XFix64(SinLut[flipHorizontal ?
                 SinLut.Length - 1 - (int)roundedIndex :
@@ -647,10 +670,13 @@ namespace XFixMath.NET
                 SinLut.Length - 1 - (int)roundedIndex - Sign(indexError) :
                 (int)roundedIndex + Sign(indexError)] >> SHIFTING);
 
-            var delta = FastMul(indexError, FastAbs(FastSub(nearestValue, secondNearestValue))).m_rawValue;
+            FastSub(nearestValue, secondNearestValue, out var sub);
+            FastAbs(sub, out var abs);
+            FastMul(indexError, abs, out var mul);
+            var delta = mul.m_rawValue;
             var interpolatedValue = nearestValue.m_rawValue + (flipHorizontal ? -delta : delta);
             var finalValue = flipVertical ? -interpolatedValue : interpolatedValue;
-            return new XFix64(finalValue);
+            result = new XFix64(finalValue);
         }
 
         /// <summary>
@@ -685,26 +711,30 @@ namespace XFixMath.NET
             return Zero;
         }
 
-        public static XFix64 Clamp(XFix64 x, XFix64 min, XFix64 max)
+        [BurstCompile]
+        public static void Clamp(in XFix64 x, in XFix64 min, in XFix64 max, out XFix64 result)
         {
-            x = x < min ? min : x;
-            x = x > max ? max : x;
-            return x;
+            var xx = x < min ? min : x;
+            xx = x > max ? max : x;
+            result = xx;
         }
 
-        public static XFix64 Clamp01(XFix64 x)
+        [BurstCompile]
+        public static void Clamp01(in XFix64 x, out XFix64 result)
         {
-            return Clamp(x, XFix64.Zero, XFix64.One);
+            Clamp(x, XFix64.Zero, XFix64.One, out result);
         }
 
-        public static XFix64 Max(XFix64 a, XFix64 b)
+        [BurstCompile]
+        public static void Max(in XFix64 a, in XFix64 b, out XFix64 result)
         {
-            return a > b ? a : b;
+            result = a > b ? a : b;
         }
 
-        public static XFix64 Min(XFix64 a, XFix64 b)
+        [BurstCompile]
+        public static void Min(in XFix64 a, in XFix64 b, out XFix64 result)
         {
-            return a > b ? b : a;
+            result = a > b ? b : a;
         }
 
         //[MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
@@ -741,7 +771,8 @@ namespace XFixMath.NET
         {
             var xl = x.m_rawValue;
             var rawAngle = xl + (xl > 0 ? -PI - PI_OVER_2 : PI_OVER_2);
-            return Sin(new XFix64(rawAngle));
+            Sin(new XFix64(rawAngle), out var sin);
+            return sin;
         }
 
         /// <summary>
@@ -777,14 +808,16 @@ namespace XFixMath.NET
             var clamped = new XFix64(clampedPi);
 
             // Find the two closest values in the LUT and perform linear interpolation
-            var rawIndex = FastMul(clamped, LutInterval);
-            var roundedIndex = Round(rawIndex);
-            var indexError = FastSub(rawIndex, roundedIndex);
+            FastMul(clamped, LutInterval, out var rawIndex);
+            Round(rawIndex, out var roundedIndex);
+            FastSub(rawIndex, roundedIndex, out var indexError);
 
             var nearestValue = new XFix64(TanLut[(int)roundedIndex] >> SHIFTING);
             var secondNearestValue = new XFix64(TanLut[(int)roundedIndex + Sign(indexError)] >> SHIFTING);
-
-            var delta = FastMul(indexError, FastAbs(FastSub(nearestValue, secondNearestValue))).m_rawValue;
+            FastSub(nearestValue, secondNearestValue, out var sub);
+            FastAbs(sub, out var abs);
+            FastMul(indexError, abs, out var mul);
+            var delta = mul.m_rawValue;
             var interpolatedValue = nearestValue.m_rawValue + delta;
             var finalValue = flip ? -interpolatedValue : interpolatedValue;
             return new XFix64(finalValue);
@@ -811,7 +844,8 @@ namespace XFixMath.NET
                 return y < Zero ? -PiOver2 : PiOver2;
             }
 
-            if (Abs(z) < One) {
+            Abs(z, out var absZ);
+            if (absZ < One) {
                 atan = z / (One + (XFix64)0.28M * z * z);
                 if (xl < 0) {
                     if (yl < 0) {

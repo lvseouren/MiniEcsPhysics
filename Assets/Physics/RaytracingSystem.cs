@@ -40,10 +40,14 @@ namespace Physics
                     XFix64Vector2 p1 = _pointsBuffer[i];
                     XFix64Vector2 p2 = _pointsBuffer[i + 1];
 
+                    XFix64.Max(p1.x, p2.x, out var mx);
+                    XFix64.Max(p1.y, p2.y, out var my);
+                    XFix64.Min(p1.x, p2.x, out var minx);
+                    XFix64.Min(p1.y, p2.y, out var miny);
                     AABB sAABB = new AABB
                     {
-                        Min = new XFix64Vector2(XFix64.Min(p1.x, p2.x), XFix64.Min(p1.y, p2.y)),
-                        Max = new XFix64Vector2(XFix64.Max(p1.x, p2.x), XFix64.Max(p1.y, p2.y))
+                        Min = new XFix64Vector2(minx, miny),               
+                        Max = new XFix64Vector2(mx, my)
                     };
 
                     for (int j = 0; j < chunk.Length; j++)
@@ -97,8 +101,10 @@ namespace Physics
             XFix64 y0 = source.y / cellSize;
             XFix64 x1 = target.x / cellSize;
             XFix64 y1 = target.y / cellSize;
-            XFix64 dx = XFix64.Abs(x1 - x0);
-            XFix64 dy = XFix64.Abs(y1 - y0);
+            XFix64.Abs(x1 - x0, out var abs1);
+            XFix64 dx = abs1;
+            XFix64.Abs(y1 - y0, out var abs2);
+            XFix64 dy = abs2;
 
             int x = (int) x0;
             int y = (int) y0;
@@ -119,14 +125,18 @@ namespace Physics
             else if (x1 > x0)
             {
                 xInc = 1;
-                n += XFix64.Floor(x1) - x;
-                tnh = (XFix64.Floor(x0) + 1 - x0) * dtDx;
+                XFix64.Floor(x1, out var flr);
+                n += flr - x;
+                XFix64.Floor(x0, out var flr2);
+                tnh = (flr2 + 1 - x0) * dtDx;
             }
             else
             {
                 xInc = -1;
-                n += x - XFix64.Floor(x1);
-                tnh = (x0 - XFix64.Floor(x0)) * dtDx;
+                XFix64.Floor(x1, out var flr);
+                n += x - flr;
+                XFix64.Floor(x0, out var flr2);
+                tnh = (x0 - flr2) * dtDx;
             }
 
             if (dy == XFix64.Zero)
@@ -137,14 +147,18 @@ namespace Physics
             else if (y1 > y0)
             {
                 yInc = 1;
-                n += XFix64.Floor(y1) - y;
-                tnv = (XFix64.Floor(y0) + 1 - y0) * dtDy;
+                XFix64.Floor(y1, out var flr);
+                n += flr - y;
+                XFix64.Floor(y0, out var flr2);
+                tnv = (flr2 + 1 - y0) * dtDy;
             }
             else
             {
                 yInc = -1;
-                n += y - XFix64.Floor(y1);
-                tnv = (y0 - XFix64.Floor(y0)) * dtDy;
+                XFix64.Floor(y1, out var flr);
+                n += y - flr;
+                XFix64.Floor(y0, out var flr2);
+                tnv = (y0 - flr2) * dtDy;
             }
 
             length = n + 1;
@@ -206,7 +220,7 @@ namespace Physics
                 return true;
             }
 
-            XFix64 sqrtDet = XFix64.Sqrt(det);
+            XFix64.Sqrt(det, out var sqrtDet);
 
             t = (-b + sqrtDet) / (2 * a);
             XFix64Vector2 p1 = new XFix64Vector2(source.x + t * dx, source.y + t * dy);

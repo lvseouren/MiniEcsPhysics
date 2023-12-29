@@ -85,7 +85,8 @@ namespace Physics
         {
             get
             {
-                XFix64Vector2 dir = new XFix64Vector2(-XFix64.Sin(Rotation), XFix64.Cos(Rotation));
+                XFix64.Sin(Rotation, out var sin);
+                XFix64Vector2 dir = new XFix64Vector2(-sin, XFix64.Cos(Rotation));
                 return Source + Length * dir;
             }
         }

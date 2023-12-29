@@ -110,7 +110,8 @@ public struct XFix64Vector2
     {
         get
         {
-            return XFix64.Sqrt(this.x * this.x + this.y * this.y);
+            XFix64.Sqrt(this.x * this.x + this.y * this.y, out var result);
+            return result;
         }
     }
 
@@ -186,7 +187,8 @@ public struct XFix64Vector2
     public static void Angle(in XFix64Vector2 from, in XFix64Vector2 to, out XFix64 result)
     {
         XFix64Vector3.Dot(from.normalized, to.normalized, out var dotResult);
-        result = XFix64.Acos(XFix64.Clamp(dotResult, -XFix64.One, XFix64.One));        
+        XFix64.Clamp(dotResult, -XFix64.One, XFix64.One, out var clp);
+        result = XFix64.Acos(clp);        
     }
 
     [BurstCompile]

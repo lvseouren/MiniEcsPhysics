@@ -275,7 +275,8 @@ public struct XFQuaternion {
 				mag = left[0] * left[0] + left[2] * left[2];
 			}
 
-			XFix64 invlen = XFix64.One / XFix64.Sqrt(mag);
+            XFix64.Sqrt(mag, out var sqrt);
+			XFix64 invlen = XFix64.One / sqrt;
 			left[0] = left[0] * invlen;
 			left[1] = left[1] * invlen;
 			left[2] = left[2] * invlen;
@@ -513,10 +514,13 @@ public struct XFQuaternion {
 	public void ToAngleAxis (out XFix64 angle, out Vector3 axis)
 	{
 		angle = Mathf.Acos (w) * 2;
-		if (XFix64.Abs (angle).Equals(XFix64.Zero)) {
+		XFix64.Abs(angle, out var abs);
+
+        if (abs.Equals(XFix64.Zero)) {
 			axis = new Vector3 (1, 0, 0);
 		} else {
-			XFix64 div = XFix64.One/XFix64.Sqrt(1-w*w);
+			XFix64.Sqrt(1 - w * w, out var sqrt);
+            XFix64 div = XFix64.One/sqrt;
 			axis = new Vector3(x*div,y*div,z*div);//??
 		}
 		//??

@@ -10,11 +10,16 @@ namespace Physics
         
         public AABB(XFix64Vector2 size, XFix64Vector2 position, XFix64 rotation)
         {
-            var sin = XFix64.Sin(rotation);
-            var cos = XFix64.Cos(rotation);            
+            XFix64.Sin(rotation, out var sin);
+            var cos = XFix64.Cos(rotation);
 
-            XFix64 ex = XFix64.Max(XFix64.Abs(size.x * cos + size.y * sin), XFix64.Abs(size.x * cos - size.y * sin));
-            XFix64 ey = XFix64.Max(XFix64.Abs(size.x * sin - size.y * cos), XFix64.Abs(size.x * sin + size.y * cos));
+            XFix64.Abs(size.x * cos + size.y * sin, out var abs1);
+            XFix64.Abs(size.x * cos - size.y * sin, out var abs2);
+            XFix64.Max(abs1, abs2, out var ex);
+
+            XFix64.Abs(size.x * sin - size.y * cos, out var abs3);
+            XFix64.Abs(size.x * sin + size.y * cos, out var abs4);
+            XFix64.Max(abs3, abs4, out var ey);
 
             Min = new XFix64Vector2(position.x - ex, position.y - ey);
             Max = new XFix64Vector2(position.x + ex, position.y + ey);

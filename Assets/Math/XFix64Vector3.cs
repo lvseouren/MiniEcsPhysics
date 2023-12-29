@@ -127,7 +127,7 @@ public struct XFix64Vector3
         get
         {
             SqrMagnitude(in this, out var result);
-            var result2 = XFix64.Sqrt(result);
+            XFix64.Sqrt(result, out var result2);
             return result2;
         }
     }
@@ -213,7 +213,8 @@ public struct XFix64Vector3
     public static void Angle(in XFix64Vector3 from, in XFix64Vector3 to, out XFix64 result)
     {
         Dot(from.normalized, to.normalized, out var dotResult);
-        result = XFix64.Acos(XFix64.Clamp(dotResult, -XFix64.One, XFix64.One));
+        XFix64.Clamp(dotResult, -XFix64.One, XFix64.One, out var clp);
+        result = XFix64.Acos(clp);
     }
 
     [BurstCompile]
@@ -246,7 +247,7 @@ public struct XFix64Vector3
         XFix64 y = (a.y - b.y);
         XFix64 z = (a.z - b.z);
 
-        result = XFix64.Sqrt(x * x + y * y + z * z);  
+        XFix64.Sqrt(x * x + y * y + z * z, out result);  
     }
 
     [BurstCompile]
@@ -258,7 +259,7 @@ public struct XFix64Vector3
     [BurstCompile]
     public static void Lerp(in XFix64Vector3 from, in XFix64Vector3 to, in XFix64 tt, out XFix64Vector3 result)
     {
-        var t = XFix64.Clamp01(tt);
+        XFix64.Clamp01(tt, out var t);
 		result = new XFix64Vector3((from.x + (to.x - from.x) * t), (from.y + (to.y - from.y) * t), (from.z + (to.z - from.z) * t));
     }
 
@@ -266,19 +267,25 @@ public struct XFix64Vector3
     public static void Magnitude(in XFix64Vector3 a, out XFix64 result)
     {
         SqrMagnitude(a, out var temp);
-        result = XFix64.Sqrt(temp);
+        XFix64.Sqrt(temp, out result);
     }
 
     [BurstCompile]
     public static void Max(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64Vector3 result)
     {
-        result = new XFix64Vector3(XFix64.Max(lhs.x, rhs.x), XFix64.Max(lhs.y, rhs.y), XFix64.Max(lhs.z, rhs.z));
+        XFix64.Max(lhs.x, rhs.x, out var x);
+        XFix64.Max(lhs.y, rhs.y, out var y);
+        XFix64.Max(lhs.z, rhs.z, out var z);
+        result = new XFix64Vector3(x, y, z);
     }
 
     [BurstCompile]
     public static void Min(in XFix64Vector3 lhs, in XFix64Vector3 rhs, out XFix64Vector3 result)
     {
-        result = new XFix64Vector3(XFix64.Min(lhs.x, rhs.x), XFix64.Min(lhs.y, rhs.y), XFix64.Min(lhs.z, rhs.z));
+        XFix64.Min(lhs.x, rhs.x, out var x);
+        XFix64.Min(lhs.y, rhs.y, out var y);
+        XFix64.Min(lhs.z, rhs.z, out var z);
+        result = new XFix64Vector3(x, y, z);
     }
 
     [BurstCompile]
