@@ -154,7 +154,7 @@ internal class SIMD_Test
         stopwatch = Stopwatch.StartNew();
         for (int i = 0; i < count; i++)
         {
-            temp = vec2.normalizedBurst;
+            //temp = vec2.normalizedBurst;
         }
         stopwatch.Stop();
         testInfo1 = ($"Burst耗时：{stopwatch.ElapsedMilliseconds}");

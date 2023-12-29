@@ -67,7 +67,8 @@ namespace Physics
                             col.ColliderType == ColliderType.Rect && !OnRectIntersection(ray, col, tr, out hitPoint))
                             continue;
 
-                        XFix64 dist = XFix64Vector2.Dot(p1, hitPoint);
+                        XFix64Vector2.Dot(p1, hitPoint, out var dotResult);
+                        XFix64 dist = dotResult;
                         if (!(dist < minDist))
                             continue;
 
@@ -213,7 +214,9 @@ namespace Physics
             t = (-b - sqrtDet) / (2 * a);
             XFix64Vector2 p2 = new XFix64Vector2(source.x + t * dx, source.y + t * dy);
 
-            hitPoint = XFix64Vector2.Dot(ray.Source, p1) < XFix64Vector2.Dot(ray.Source, p2) ? p1 : p2;
+            XFix64Vector2.Dot(ray.Source, p1, out var dotResult1);
+            XFix64Vector2.Dot(ray.Source, p2, out var dotResult2);
+            hitPoint = dotResult1 < dotResult2 ? p1 : p2;
             return true;
         }
 
@@ -255,7 +258,8 @@ namespace Physics
 
                 XFix64Vector2 p = ray.Source + t * b;
 
-                XFix64 dist = XFix64Vector2.Dot(ray.Source, p);
+                XFix64Vector2.Dot(ray.Source, p, out var dotResult);
+                XFix64 dist = dotResult;
                 if (!(dist < minDist))
                     continue;
 

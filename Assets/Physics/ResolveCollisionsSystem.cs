@@ -52,7 +52,8 @@ namespace Physics
 
 				XFix64Vector2 rv = rb.Velocity - ra.Velocity;
 
-				XFix64 contactVel = XFix64Vector2.Dot(rv, info.Normal);
+                XFix64Vector2.Dot(rv, info.Normal, out var dotResult);
+				XFix64 contactVel = dotResult;
 				XFix64 invMassSum = ra.InvMass + rb.InvMass;
 
 				XFix64 f = -contactVel / invMassSum;
@@ -88,7 +89,9 @@ namespace Physics
 			int faceNormal = 0;
 			for (int i = 0; i < 4; ++i)
 			{
-				XFix64 s = XFix64Vector2.Dot(cb.Normals[i], center - cb.Vertices[i]);
+				XFix64Vector2.Dot(cb.Normals[i], center - cb.Vertices[i], out var dotResult);
+
+                XFix64 s = dotResult;
 				if (s > radius)
 					return;
 
@@ -113,9 +116,12 @@ namespace Physics
 			XFix64Vector2 v1 = cb.Vertices[faceNormal];
 			XFix64Vector2 v2 = cb.Vertices[faceNormal + 1 < 4 ? faceNormal + 1 : 0];
 
-			if (XFix64Vector2.Dot(center - v1, v2 - v1) <= 0.0f)
+			XFix64Vector2.Dot(center - v1, v2 - v1, out var dotResult1);
+
+            if (dotResult1 <= 0.0f)
 			{
-				if (XFix64Vector2.Dot(center, v1) > radius * radius)
+				XFix64Vector2.Dot(center, v1, out var dotResult2);
+                if (dotResult2 > radius * radius)
 					return;
 
 				contactInfo.Hit = true;
@@ -123,10 +129,13 @@ namespace Physics
 				contactInfo.HitPoint = MathHelper.Mul(rotate, v1) + tb.Position;
 				return;
 			}
-			
-			if (XFix64Vector2.Dot(center - v2, v1 - v2) <= 0.0f)
+			XFix64Vector2.Dot(center - v2, v1 - v2, out var dotResult3);
+
+            if (dotResult3 <= 0.0f)
 			{
-				if (XFix64Vector2.Dot(center, v2) > radius * radius)
+				XFix64Vector2.Dot(center, v2, out var dotResult4);
+
+                if (dotResult4 > radius * radius)
 					return;
 
 				contactInfo.Hit = true;
@@ -136,7 +145,9 @@ namespace Physics
 			}
 
 			XFix64Vector2 n = cb.Normals[faceNormal];
-			if (XFix64Vector2.Dot(center - v1, n) > radius)
+			XFix64Vector2.Dot(center - v1, n, out var dotResult5);
+
+            if (dotResult5 > radius)
 				return;
 
 			contactInfo.Normal = -MathHelper.Mul(rotate, n);
