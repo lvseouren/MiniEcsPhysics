@@ -110,7 +110,8 @@ public struct XFQuaternion {
 		XFix64 m = XFQuaternion.Dot (a, a);
 
 		if (m > 0) {
-			m = 1/ Mathf.Sqrt(m);
+			XFix64.Sqrt(m, out var sqrt);
+			m = 1/ sqrt;
 			return new XFQuaternion(a.x * m, a.y * m,a.z * m,a.w * m);
 		}
 		return a;
@@ -119,15 +120,17 @@ public struct XFQuaternion {
 	public static XFix64 Angle (XFQuaternion a, XFQuaternion b)
 	{
 		XFix64 f = XFQuaternion.Dot (a, b);
-		return Mathf.Acos (Mathf.Min (Mathf.Abs (f), 1f)) * 2f * 57.29578f;
+		XFix64.Abs(f, out var absF);
+		XFix64.Min(absF, 1, out var min);
+		return XFix64.Acos (min) * 2 * MathXFix64.Rad2Deg;
 	}
 
 	public static XFQuaternion AngleAxis (XFix64 angle, Vector3 axis)
 	{
 		Vector3 normAxis = axis.normalized;
 		angle = angle * 0.0174532924f * 0.5f; 
-		XFix64 s = Mathf.Sin (angle); 
-		XFix64 w = Mathf.Cos (angle);
+		XFix64 s = XFix64.Sin (angle); 
+		XFix64 w = XFix64.Cos (angle);
 		XFix64 x = normAxis.x * s;
 		XFix64 y = normAxis.y * s;
 		XFix64 z = normAxis.z * s;
@@ -143,12 +146,12 @@ public struct XFQuaternion {
 	{
 		euler = euler * 0.0174532924f * 0.5f;
 
-		XFix64 sinX = Mathf.Sin (euler.x);
-		XFix64 cosX = Mathf.Cos (euler.x);
-		XFix64 sinY = Mathf.Sin (euler.y);
-		XFix64 cosY = Mathf.Cos (euler.y);
-		XFix64 sinZ = Mathf.Sin (euler.z);
-		XFix64 cosZ = Mathf.Cos (euler.z);
+		XFix64 sinX = XFix64.Sin (euler.x);
+		XFix64 cosX = XFix64.Cos (euler.x);
+		XFix64 sinY = XFix64.Sin (euler.y);
+		XFix64 cosY = XFix64.Cos (euler.y);
+		XFix64 sinZ = XFix64.Sin (euler.z);
+		XFix64 cosZ = XFix64.Cos (euler.z);
 
 		XFQuaternion quat = XFQuaternion.identity;
 
@@ -191,26 +194,26 @@ public struct XFQuaternion {
 		XFix64 check = 2 * (q.y * q.z - q.w * q.x);
 		if (check < 1) {
 			if(check > -1){
-				Vector3 v = new Vector3(Mathf.Asin(check) * -1,
-				                        Mathf.Atan2(2*(q.x*q.z + q.w*q.y),1 - 2*(q.x*q.x + q.y*q.y)),
-				                        Mathf.Atan2(2*(q.x*q.y + q.w*q.z),1 - 2*(q.x*q.x + q.z*q.z)));
+				Vector3 v = new Vector3(XFix64.Asin(check) * -1,
+				                        XFix64.Atan2(2*(q.x*q.z + q.w*q.y),1 - 2*(q.x*q.x + q.y*q.y)),
+				                        XFix64.Atan2(2*(q.x*q.y + q.w*q.z),1 - 2*(q.x*q.x + q.z*q.z)));
 				SanitizeEnler(v);
-				v = v * 57.29578f;
+				v = v * MathXFix64.Rad2Deg;
 				return v;
 			}else{
 				Vector3 v = new Vector3(XFix64.PiOver2,
-				                        Mathf.Atan2(2*(q.x*q.y - q.w*q.z),1 - 2*(q.y*q.y + q.z*q.z)),
+				                        XFix64.Atan2(2*(q.x*q.y - q.w*q.z),1 - 2*(q.y*q.y + q.z*q.z)),
 				                        0);
 				SanitizeEnler(v);
-				v = v * 57.29578f;
+				v = v * MathXFix64.Rad2Deg;
 				return v;
 			}
 		}else{
 			Vector3 v = new Vector3(-XFix64.PiOver2,
-			                        Mathf.Atan2(-2*(q.x*q.y - q.w*q.z),1 - 2*(q.y*q.y + q.z*q.z)),
+			                        XFix64.Atan2(-2*(q.x*q.y - q.w*q.z),1 - 2*(q.y*q.y + q.z*q.z)),
 			                        0);
 			SanitizeEnler(v);
-			v = v * 57.29578f;
+			v = v * MathXFix64.Rad2Deg;
 			return v;
 		}
 	}
@@ -220,7 +223,7 @@ public struct XFQuaternion {
 
 		XFQuaternion quat = new XFQuaternion ();
 		if (trace > 0) {
-			XFix64 s = Mathf.Sqrt (trace + 1);
+			XFix64.Sqrt (trace + 1, out var s);
 			quat.w = 0.5f * s;
 			s = 0.5f / s;
 			quat.x = (rot [2, 1] - rot [1, 2]) * s;
@@ -243,7 +246,8 @@ public struct XFQuaternion {
 			int k = _next[j];
 
 			XFix64 t = rot[i,i] - rot[j,j] - rot[k,k] + 1;
-			XFix64 s = 0.5f / Mathf.Sqrt(t);
+			XFix64.Sqrt(t, out var st);
+			XFix64 s = XFix64.Half / st;
 			q[i] = s * t;
 
 			XFix64 w = (rot[k,j] - rot[j,k]) * s;
@@ -380,7 +384,8 @@ public struct XFQuaternion {
 
 		if (t > 0) {
 			t += 1;
-			XFix64 s = 0.5f / Mathf.Sqrt (t);
+            XFix64.Sqrt(t, out var st);
+            XFix64 s = XFix64.Half / st;
 			XFix64 w = s * t;
 			XFix64 x = (upwards.z - forward.y) * s;
 			XFix64 y = (forward.x - right.z) * s;
@@ -411,7 +416,8 @@ public struct XFQuaternion {
 
 			XFix64 t2 = rot[i,i] - rot[j,j] - rot[k,k] + 1;
 
-			XFix64 s = 0.5f / Mathf.Sqrt(t2);
+            XFix64.Sqrt(t, out var st2);
+            XFix64 s = XFix64.Half / st2;
 			q[i] = s * t;
 			XFix64 w = (rot[k,j] - rot[j,k]) * s;
 			q[j] = (rot[j,i] + rot[i,j]) * s;
@@ -431,14 +437,14 @@ public struct XFQuaternion {
 		{
 			return to;
 		}
-		XFix64 t = Mathf.Min (1f, maxDegreesDelta / num);
+		XFix64.Min (1f, maxDegreesDelta / num, out var t);
 		return XFQuaternion.UnclampedSlerp (from, to, t);
 	}
 	
 	public static XFQuaternion Slerp (XFQuaternion from, XFQuaternion to, XFix64 t)
 	{
-		t = Mathf.Clamp (t, 0, 1);
-		return XFQuaternion.UnclampedSlerp (from, to, t);
+		XFix64.Clamp (t, 0, 1, out var ct);
+		return XFQuaternion.UnclampedSlerp (from, to, ct);
 	}
 
 	public static XFQuaternion UnclampedSlerp(XFQuaternion from,XFQuaternion to,XFix64 t){
@@ -450,12 +456,12 @@ public struct XFQuaternion {
 		}
 
 		if (cosAngle < 0.95f) {
-			XFix64 angle = Mathf.Acos (cosAngle);
-			XFix64 sinAngle = Mathf.Sin (angle);
+			XFix64 angle = XFix64.Acos (cosAngle);
+			XFix64 sinAngle = XFix64.Sin (angle);
 			XFix64 invSinAngle = 1 / sinAngle;
 
-			XFix64 t1 = Mathf.Sin ((1 - t) * angle) * invSinAngle;
-			XFix64 t2 = Mathf.Sin (t * angle) * invSinAngle;
+			XFix64 t1 = XFix64.Sin ((1 - t) * angle) * invSinAngle;
+			XFix64 t2 = XFix64.Sin (t * angle) * invSinAngle;
 
 			return new XFQuaternion (from.x * t1 + to.x * t2, from.y * t1 + to.y * t2, from.z * t1 + to.z * t2, from.w * t1 + to.w * t2);
 		} else {
@@ -513,7 +519,7 @@ public struct XFQuaternion {
 	
 	public void ToAngleAxis (out XFix64 angle, out Vector3 axis)
 	{
-		angle = Mathf.Acos (w) * 2;
+		angle = XFix64.Acos (w) * 2;
 		XFix64.Abs(angle, out var abs);
 
         if (abs.Equals(XFix64.Zero)) {
@@ -524,7 +530,7 @@ public struct XFQuaternion {
 			axis = new Vector3(x*div,y*div,z*div);//??
 		}
 		//??
-		angle *= 57.29578f;
+		angle *= MathXFix64.Rad2Deg;
 	}
 
 	public override string ToString ()

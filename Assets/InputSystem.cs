@@ -35,7 +35,8 @@ public class InputSystem : IEcsSystem
                 return;
 
             XFix64 rad = transform.Rotation;
-            XFix64Vector2 dir = new XFix64Vector2(-XFix64.Sin(rad), XFix64.Cos(rad));
+            XFix64.Sin(rad, out var sin);
+            XFix64Vector2 dir = new XFix64Vector2(-sin, XFix64.Cos(rad));
             rigBody.Velocity = 25 * dir;
         });
     }

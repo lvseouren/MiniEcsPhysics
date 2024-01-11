@@ -11,3 +11,4 @@ Assembly-CSharp.csproj
 MiniEcsPhysics.sln
 .vs/
 bin/
+Build/

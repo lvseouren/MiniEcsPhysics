@@ -131,11 +131,6 @@ public struct XFix64Vector2
         }
     }
 
-    //public static XFix64Vector3 Normalize(XFix64Vector2 value)
-    //{
-    //    XFix64Vector3 temp = new XFix64Vector3(value);
-    //    return temp.normalized;
-    //}
 
     public XFix64 sqrMagnitude
     {
@@ -210,6 +205,11 @@ public struct XFix64Vector2
 
     [BurstCompile]
     public static void Dot(in XFix64Vector2 lhs, in XFix64Vector2 rhs, out XFix64 result)
+    {
+        result = lhs.x * rhs.x + lhs.y * rhs.y;
+    }
+
+    public static void DotOld(in XFix64Vector2 lhs, in XFix64Vector2 rhs, out XFix64 result)
     {
         result = lhs.x * rhs.x + lhs.y * rhs.y;
     }

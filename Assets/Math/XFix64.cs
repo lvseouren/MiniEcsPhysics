@@ -139,6 +139,14 @@ namespace XFixMath.NET
             }
         }
 
+        static XFix64 RadianToDegreeFactor
+        {
+            get
+            {
+                return (XFix64)57.29578M;
+            }
+        }
+
         const int SHIFTING = 8; // 小数点 从中点向右移位；作用：当值为正时，扩大整数范围
 
         const long LONG_MAX_VALUE = long.MaxValue;
@@ -651,7 +659,7 @@ namespace XFixMath.NET
         /// It may lose accuracy as the value of x grows.
         /// Performance: about 25% slower than Math.Sin() in x64, and 200% slower in x86.
         /// </summary>
-        public static void Sin(in XFix64 x, out XFix64 result)
+        public static XFix64 Sin(in XFix64 x)
         {
             bool flipHorizontal, flipVertical;
             var clampedL = ClampSinValue(x.m_rawValue, out flipHorizontal, out flipVertical);
@@ -676,7 +684,7 @@ namespace XFixMath.NET
             var delta = mul.m_rawValue;
             var interpolatedValue = nearestValue.m_rawValue + (flipHorizontal ? -delta : delta);
             var finalValue = flipVertical ? -interpolatedValue : interpolatedValue;
-            result = new XFix64(finalValue);
+            return new XFix64(finalValue);
         }
 
         /// <summary>
@@ -702,13 +710,25 @@ namespace XFixMath.NET
         }
 
         /// <summary>
+        /// https://stackoverflow.com/questions/7378187/approximating-inverse-trigonometric-functions
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static XFix64 Asin(XFix64 x)
+        {
+            Sqrt((One + x) * (One - x), out var temp);
+            return Atan2(x, temp);
+        }
+
+        /// <summary>
         /// todo:返回cos值对应的angle，即cos(return) = x
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
         public static XFix64 Acos(XFix64 x)
         {
-            return Zero;
+            Sqrt((One + x) * (One - x), out var temp);
+            return Atan2(temp, x);
         }
 
         [BurstCompile]
@@ -771,8 +791,7 @@ namespace XFixMath.NET
         {
             var xl = x.m_rawValue;
             var rawAngle = xl + (xl > 0 ? -PI - PI_OVER_2 : PI_OVER_2);
-            Sin(new XFix64(rawAngle), out var sin);
-            return sin;
+            return Sin(new XFix64(rawAngle));
         }
 
         /// <summary>

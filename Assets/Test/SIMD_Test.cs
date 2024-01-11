@@ -142,10 +142,11 @@ internal class SIMD_Test
         int count = 100000;
         var vec2 = MathXFix64.RandomXFix64Vec2();
         XFix64Vector3 temp;
+        XFix64 temp2;
         Stopwatch stopwatch = Stopwatch.StartNew();
         for (int i = 0; i < count; i++)
         {
-            temp = vec2.normalized;
+            XFix64Vector2.DotOld(vec2, vec2, out temp2);
         }
         stopwatch.Stop();
         var testInfo1 = ($"原版耗时：{stopwatch.ElapsedMilliseconds}");
@@ -154,7 +155,7 @@ internal class SIMD_Test
         stopwatch = Stopwatch.StartNew();
         for (int i = 0; i < count; i++)
         {
-            //temp = vec2.normalizedBurst;
+            XFix64Vector2.Dot(vec2, vec2, out temp2);
         }
         stopwatch.Stop();
         testInfo1 = ($"Burst耗时：{stopwatch.ElapsedMilliseconds}");
